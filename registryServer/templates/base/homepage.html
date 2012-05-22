@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+
+{% block title %}OAuth 2.0 Example Site{% endblock %}
+
+{% block content %}
+
+<h1>Trust Framework</h1>
+
+<div class="content_container">
+	{% if request.user.is_authenticated %}
+		
+		{% if request.user.is_staff %}
+			<p>You are an administrator. Go to the <a href="/account/adminToolbar">Admin Toolbar</a> to create and edit users.</p>
+		{% endif %}
+	
+	{% if access_tokens %}
+	<p>You have issued the following access tokens.</p>
+	<table class="data">
+			<tr>
+				<th>Client name</th>
+				<th>Scope</th>
+			</tr>
+		{% for access_token in access_tokens %}
+			<tr>
+				<td><a href="/client/{{ access_token.client.key }}">{{ access_token.client.name }}</a></td>
+				<td>
+					{% if access_token.scope.all|length == 0 %}
+						<em>No scope</em>
+					{% endif %}
+					{% for access_range in access_token.scope.all %}
+						{{ access_range.key }}
+					{% endfor %}
+				</td>
+			</tr>		
+		{% endfor %}
+	</table>
+	{% else %}
+	<p>You have no access_tokens. Authorize a client to create one.</p>
+	{% endif %}	
+	{% endif %}
+</div>
+
+
+
+{% endblock %}

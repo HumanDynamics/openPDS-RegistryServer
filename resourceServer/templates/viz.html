@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% load chart_tags %}
+
+{% block content %}
+<div id="results">
+  <h2>WELL-BEING<hr /></h2>
+
+    {% chart %}
+      chxl=0:|Sociability|Activity|Focus
+      chxr=0,0,5
+      chxs=0,676767,13.5,0,t,676767
+      chxt=x
+      chs=320x280
+      cht=r
+      chco={% if val_radar_ave %} 99CC00, {% endif %}AA66CC
+      chds=0,5,0,5
+      chd=t:{% if val_radar_ave %} {{ val_radar_ave|join:',' }} | {% endif %}{{ val_radar_me|join:',' }}
+      chdl={% if val_radar_ave %} Average+Participant | {% endif %}You
+      chdlp=b
+      chls=3|4
+      chm={% if not val_radar_ave %} B,AA66CC82,0,0,0,1 {% else %} B,AA66CC82,1,0,0,1|B,99CC0090,0,0,0 {% endif %}
+    {% endchart %}
+  <h2>ACTIVITY<hr /></h2>
+    {% chart %}
+      chs=300x100
+      cht=ls
+      chco=AA66CC
+      chd=t:{{ activity_data }}
+      chds=0,20
+      chls=2
+      chma=30,40,10,20
+      chxt=x
+      chxl=0:|Three+hours+ago|Now
+      chxp=0,0
+      chxtc=0,20
+      chxs=0,676767,12.5,-1,lt,676767
+    {% endchart %}
+  <h2>FOCUS<hr /></h2>
+    {% chart %}
+      chs=300x100
+      cht=ls
+      chco=AA66CC
+      chd=t:{{ focus_data }}
+      chds=-10,0
+      chls=2
+      chma=30,40,10,20
+      chxt=x
+      chxl=0:|Three+hours+ago|Now
+      chxp=0,0
+      chxtc=0,20
+      chxs=0,676767,12.5,-1,lt,676767
+    {% endchart %}
+</div>
+
+<div id="footer">
+
+</div>
+{% endblock %}
+

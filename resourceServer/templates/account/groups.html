@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% load uni_form_tags %}
+
+{% block title %}Your Groups{% endblock %}
+
+{% block content %}
+
+	<h1>Your Groups</h1>
+
+	<div class="content_container">
+	  {% for group in groups %}
+				{{ group.name }}
+		{% endfor %}
+	</div>
+	
+	<div class="form_container">
+		{% uni_form groupForm groupForm.helper %}
+	</div>
+
+{% endblock %}

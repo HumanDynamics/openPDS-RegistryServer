@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% load uni_form_tags %}
+
+{% block title %}Admin Toolbar{% endblock %}
+
+{% block content %}
+
+	<h1>Admin Toolbar</h1>
+
+	<div class="content_container">
+		<form method="get" action="">
+				<p>Find User by ID</p><input type="text" name="uid"/>
+				<input type="submit" value="search"/>
+		</form>
+		<br/>
+		<form method="get" action="">
+				<input type="submit" value="Create a New User"/>
+		</form>
+	</div>
+	
+  <div class="content_container">
+		{% if uid %}<a href="/account/roleUsers/{{ uid }}/">Change this User's Roles</a>{% endif %}
+		<form method="post" action="">{% csrf_token %}
+				{{ userform.as_p }}
+				{{ profileform.as_p }}
+				<input type="submit" value="save"/>
+				{% if saved %}<p>User Saved</p>{% endif %}
+		</form>
+  </div>
+
+{% endblock %}

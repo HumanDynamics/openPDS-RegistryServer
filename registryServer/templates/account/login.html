@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load uni_form_tags %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+
+	<h1>Login</h1>
+
+	<div class="content_container">
+		<form method="post" action="">{% csrf_token %}
+			  {{ form.as_p }}
+				<input type="submit" value="login" />
+	      <input type="hidden" name="next" value="{{ next }}" />
+		</form>
+	</div>
+	
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$('form.uniForm').uniform();
+		});
+	</script>
+
+{% endblock %}
