@@ -9,7 +9,6 @@ import numpy as np
 
 from django.http import HttpResponse
 #from account.models import *
-from mongoengine import *
 from datastoreModels import *
 from trustWrapper import *
 from django.utils import simplejson as json_simple
