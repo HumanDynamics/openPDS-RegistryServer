@@ -7,9 +7,7 @@ import hashlib
 import datetime
 import numpy as np
 
-from oauth2app.authenticate import JSONAuthenticator, AuthenticationException
 from django.http import HttpResponse
-from oauth2app.models import AccessRange
 #from account.models import *
 from mongoengine import *
 from datastoreModels import *
