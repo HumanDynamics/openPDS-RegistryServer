@@ -9,7 +9,6 @@ urlpatterns = patterns('trustedResources.apps.api.views',
     (r'^set_funf_sensor_groups$',     'changeFunfConfig'),
     (r'^getDefaults$',     'getDefaults'),
     (r'^get_answers$',	'viz'),
-    (r'^validate$', 'isTokenValid'),
     (r'^get_results$', 'viz'),
     (r'^set_funf_data$', 'data'),
     (r'^get_funf_sensor_data$', 'getFunfSensorData'),
@@ -19,6 +18,4 @@ urlpatterns = patterns('trustedResources.apps.api.views',
     (r'^update_reality_analysis_data$', 'updateRealityAnalysisData'),
 
 )
-#handler404 = 'oauthManagement.apps.api.views.my_custom_404_view'
-logging.debug('testing urls...not found')
 

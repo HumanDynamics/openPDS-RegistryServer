@@ -45,154 +45,136 @@ class MissingParameterError(Exception):
 def log_401(request):
    return {"error": "four o one"}
 
-def log_403(request):
-    logging.debug('log 403')
-    
-    try:
-        datastore_owner = request.GET['datastore_owner']
-    except:
-        return authenticator.response({"success":False, "reason": "missing datastore_owner"})
-	
+#def log_403(request):
+#    logging.debug('log 403')
+#    
+#    try:
+#        datastore_owner = request.GET['datastore_owner']
+#    except:
+#        return authenticator.response({"success":False, "reason": "missing datastore_owner"})
+#	
+#
+#    #pk = str(authenticator.user.pk)
+#    #logging.debug(pk)
+#    #validate permissions
+#    pk = "1"
+#    try:
+#	# connecting to Mongo
+#	connection = pymongo.Connection()
+#	db = connection["TF"]
+#        logCollection = db.log
+#	al_entry = {}
+#       	if request.GET.__contains__('purpose'):
+#       	    al_entry['purpose'] = request.GET['purpose']
+#	if request.GET.__contains__('script'):
+#   	    al_entry['script'] = request.path
+#	if request.GET.__contains__('scope'):
+#	    al_entry['scope'] = str(scope)
+#	if request.GET.__contains__('system_entity_toggle'):
+#	    al_entry['system_entity_toggle'] = True
+#	else:
+#	    al_entry['system_entity_toggle'] = False
+#	# the requester must be the datastore_owner
+#	if request.GET.__contains__('datastore_owner'):
+#	    al_entry['datastore_owner'] = datastore_owner 
+#	if request.GET.__contains__('requester'):
+#	    al_entry['requester'] = pk 
+#	if request.GET.__contains__('allow'):
+#   	    al_entry['trust_wrapper_result'] = 'allow'	
+#	logCollection.insert(al_entry)
+#    finally:
+#        connection.disconnect()
+#        return authenticator.response({
+#            "success":True, "error":"Page not found"})
+#    return authenticator.response({ "success": False})
+#
+#
+#def log_500(request):
+#    logging.debug('log 500')
+#    
+#    #validate permissions
+#    try:
+#	# connecting to Mongo
+#	connection = pymongo.Connection()
+#	db = connection["TF"]
+#        logCollection = db.log
+#	al_entry = {}
+#       	if request.GET.__contains__('purpose'):
+#       	    al_entry['purpose'] = request.GET['purpose']
+#	if request.GET.__contains__('script'):
+#   	    al_entry['script'] = request.path
+#	if request.GET.__contains__('scope'):
+#	    al_entry['scope'] = str(scope)
+#	if request.GET.__contains__('system_entity_toggle'):
+#	    al_entry['system_entity_toggle'] = True
+#	else:
+#	    al_entry['system_entity_toggle'] = False
+#	# the requester must be the datastore_owner
+#	if request.GET.__contains__('datastore_owner'):
+#	    al_entry['datastore_owner'] = datastore_owner 
+#	if request.GET.__contains__('requester'):
+#	    al_entry['requester'] = pk 
+#	if request.GET.__contains__('allow'):
+#   	    al_entry['trust_wrapper_result'] = 'allow'	
+#	logCollection.insert(al_entry)
+#    finally:
+#        connection.disconnect()
+#        return authenticator.response({
+#            "success":True, "error":"Page not found"})
+#    return authenticator.response({ "success": False})
 
-    #pk = str(authenticator.user.pk)
-    #logging.debug(pk)
-    #validate permissions
-    pk = "1"
-    try:
-	# connecting to Mongo
-	connection = pymongo.Connection()
-	db = connection["TF"]
-        logCollection = db.log
-	al_entry = {}
-       	if request.GET.__contains__('purpose'):
-       	    al_entry['purpose'] = request.GET['purpose']
-	if request.GET.__contains__('script'):
-   	    al_entry['script'] = request.path
-	if request.GET.__contains__('scope'):
-	    al_entry['scope'] = str(scope)
-	if request.GET.__contains__('system_entity_toggle'):
-	    al_entry['system_entity_toggle'] = True
-	else:
-	    al_entry['system_entity_toggle'] = False
-	# the requester must be the datastore_owner
-	if request.GET.__contains__('datastore_owner'):
-	    al_entry['datastore_owner'] = datastore_owner 
-	if request.GET.__contains__('requester'):
-	    al_entry['requester'] = pk 
-	if request.GET.__contains__('allow'):
-   	    al_entry['trust_wrapper_result'] = 'allow'	
-	logCollection.insert(al_entry)
-    finally:
-        connection.disconnect()
-        return authenticator.response({
-            "success":True, "error":"Page not found"})
-    return authenticator.response({ "success": False})
-
-
-def log_500(request):
-    logging.debug('log 500')
-    
-    #validate REST
-    scope = AccessRange.objects.get(key="reality_analysis")
-    authenticator = JSONAuthenticator(scope=scope)
-
-    try:
-        authenticator.validate(request)
-    except AuthenticationException:
-	logging.debug(authenticator.error_response())
-        return authenticator.error_response()
-    datastore_owner = ""
-    try:
-        datastore_owner = request.GET['datastore_owner']
-    except:
-        return authenticator.response({"success":False, "reason": "missing datastore_owner"})
-	
-
-    pk = str(authenticator.user.pk)
-    logging.debug(pk)
-    #validate permissions
-    try:
-	# connecting to Mongo
-	connection = pymongo.Connection()
-	db = connection["TF"]
-        logCollection = db.log
-	al_entry = {}
-       	if request.GET.__contains__('purpose'):
-       	    al_entry['purpose'] = request.GET['purpose']
-	if request.GET.__contains__('script'):
-   	    al_entry['script'] = request.path
-	if request.GET.__contains__('scope'):
-	    al_entry['scope'] = str(scope)
-	if request.GET.__contains__('system_entity_toggle'):
-	    al_entry['system_entity_toggle'] = True
-	else:
-	    al_entry['system_entity_toggle'] = False
-	# the requester must be the datastore_owner
-	if request.GET.__contains__('datastore_owner'):
-	    al_entry['datastore_owner'] = datastore_owner 
-	if request.GET.__contains__('requester'):
-	    al_entry['requester'] = pk 
-	if request.GET.__contains__('allow'):
-   	    al_entry['trust_wrapper_result'] = 'allow'	
-	logCollection.insert(al_entry)
-    finally:
-        connection.disconnect()
-        return authenticator.response({
-            "success":True, "error":"Page not found"})
-    return authenticator.response({ "success": False})
-
-def log_404(request):
-    logging.debug('log 404')
-    
-    #validate REST
-    scope = AccessRange.objects.get(key="reality_analysis")
-    authenticator = JSONAuthenticator(scope=scope)
-
-    try:
-        authenticator.validate(request)
-    except AuthenticationException:
-	logging.debug(authenticator.error_response())
-        return authenticator.error_response()
-    datastore_owner = ""
-    try:
-        datastore_owner = request.GET['datastore_owner']
-    except:
-        return authenticator.response({"success":False, "reason": "missing datastore_owner"})
-	
-
-    pk = str(authenticator.user.pk)
-    logging.debug(pk)
-    logging.debug('pre-get_averages query')
-    #validate permissions
-    try:
-	# connecting to Mongo
-	connection = pymongo.Connection()
-	db = connection["TF"]
-        logCollection = db.log
-	al_entry = {}
-       	if request.GET.__contains__('purpose'):
-       	    al_entry['purpose'] = request.GET['purpose']
-	if request.GET.__contains__('script'):
-   	    al_entry['script'] = request.path
-	if request.GET.__contains__('scope'):
-	    al_entry['scope'] = str(scope)
-	if request.GET.__contains__('system_entity_toggle'):
-	    al_entry['system_entity_toggle'] = True
-	else:
-	    al_entry['system_entity_toggle'] = False
-	# the requester must be the datastore_owner
-	if request.GET.__contains__('datastore_owner'):
-	    al_entry['datastore_owner'] = datastore_owner 
-	if request.GET.__contains__('requester'):
-	    al_entry['requester'] = pk 
-	if request.GET.__contains__('allow'):
-   	    al_entry['trust_wrapper_result'] = 'allow'	
-	logCollection.insert(al_entry)
-    finally:
-        connection.disconnect()
-        return authenticator.response({
-            "success":True, "error":"Page not found"})
-    return authenticator.response({ "success": False})
+#def log_404(request):
+#    logging.debug('log 404')
+#    
+#    #validate REST
+#    scope = AccessRange.objects.get(key="reality_analysis")
+#    authenticator = JSONAuthenticator(scope=scope)
+#
+#    try:
+#        authenticator.validate(request)
+#    except AuthenticationException:
+#	logging.debug(authenticator.error_response())
+#        return authenticator.error_response()
+#    datastore_owner = ""
+#    try:
+#        datastore_owner = request.GET['datastore_owner']
+#    except:
+#        return authenticator.response({"success":False, "reason": "missing datastore_owner"})
+#	
+#
+#    pk = str(authenticator.user.pk)
+#    logging.debug(pk)
+#    logging.debug('pre-get_averages query')
+#    #validate permissions
+#    try:
+#	# connecting to Mongo
+#	connection = pymongo.Connection()
+#	db = connection["TF"]
+#        logCollection = db.log
+#	al_entry = {}
+#       	if request.GET.__contains__('purpose'):
+#       	    al_entry['purpose'] = request.GET['purpose']
+#	if request.GET.__contains__('script'):
+#   	    al_entry['script'] = request.path
+#	if request.GET.__contains__('scope'):
+#	    al_entry['scope'] = str(scope)
+#	if request.GET.__contains__('system_entity_toggle'):
+#	    al_entry['system_entity_toggle'] = True
+#	else:
+#	    al_entry['system_entity_toggle'] = False
+#	# the requester must be the datastore_owner
+#	if request.GET.__contains__('datastore_owner'):
+#	    al_entry['datastore_owner'] = datastore_owner 
+#	if request.GET.__contains__('requester'):
+#	    al_entry['requester'] = pk 
+#	if request.GET.__contains__('allow'):
+#   	    al_entry['trust_wrapper_result'] = 'allow'	
+#	logCollection.insert(al_entry)
+#    finally:
+#        connection.disconnect()
+#        return authenticator.response({
+#            "success":True, "error":"Page not found"})
+#    return authenticator.response({ "success": False})
 
 def setRealityAnalysisData(request):
     logging.debug('set reality analysis data')
@@ -716,7 +698,10 @@ def setRolePermissions(request):
         #return authenticator.response(result)
         return response
 
-    return authenticator.response({ "success": False})
+        response = HttpResponse(
+            content={'success':False},
+            content_type='application/json')
+        return response
 
 
     
@@ -767,9 +752,11 @@ def changeSharingLevel(request):
             content=json.dumps(insert_string),
             content_type='application/json')
         #return authenticator.response(result)
-        return response
 
-    return authenticator.response({ "success": False})
+    response = HttpResponse(
+            content={'success':False},
+            content_type='application/json')
+    return response
 
 
 
@@ -791,69 +778,82 @@ def changeSharingLevel(request):
     
     
 def changeFunfConfig(request):
-    scope = AccessRange.objects.get(key="funf_write")
-    authenticator = JSONAuthenticator(scope=scope)
-    try:
-        authenticator.validate(request)
-    except AuthenticationException:
-        return authenticator.error_response()
-    logging.debug('passed authentication')
-        
-    try:
-        (connection, db) = connectToMongoDB(str(authenticator.user.pk))
-        fconfig = findOrCreate('funf', db, emptyFunf)
-        pp = findOrCreate('personalPermissions', db, emptyPersonalPermissions)
-        
-        if request.method == 'GET' and request.GET.__contains__('activity') and request.GET.__contains__('focus') and request.GET.__contains__('social'):
-            fid = request.GET['fid']
-            logging.debug('fid:'+fid)
-            activity = (request.GET['activity'] == 'true')
-            focus = (request.GET['focus'] == 'true')
-            social = (request.GET['social'] == 'true')
-            
-            logging.debug('connect to user\'s personal store')
-            
-            fconfig['activity'] = activity
-            fconfig['focus'] = focus
-            fconfig['social'] = social
-            if request.GET.__contains__("funf_key"):
-                fconfig['funf_key'] = request.GET['funf_key']
-            db.funf.save(fconfig)
-            
-            logging.debug('disconnect to user\'s personal store')
-            logging.debug('change funf config compelte')
-            
-        logging.debug('about to build funf config')
-        config = buildConfigFile(fconfig, pp)
-    finally:
-        connection.disconnect()
-    logging.debug('funf config:' + str(config))
-        
-    return authenticator.response(config)
+	response = HttpResponse(
+            content={'success':False},
+            content_type='application/json')
+        return response
+#    scope = AccessRange.objects.get(key="funf_write")
+#    authenticator = JSONAuthenticator(scope=scope)
+#    try:
+#        authenticator.validate(request)
+#    except AuthenticationException:
+#        return authenticator.error_response()
+#    logging.debug('passed authentication')
+#        
+#    try:
+#        (connection, db) = connectToMongoDB(str(authenticator.user.pk))
+#        fconfig = findOrCreate('funf', db, emptyFunf)
+#        pp = findOrCreate('personalPermissions', db, emptyPersonalPermissions)
+#        
+#        if request.method == 'GET' and request.GET.__contains__('activity') and request.GET.__contains__('focus') and request.GET.__contains__('social'):
+#            fid = request.GET['fid']
+#            logging.debug('fid:'+fid)
+#            activity = (request.GET['activity'] == 'true')
+#            focus = (request.GET['focus'] == 'true')
+#            social = (request.GET['social'] == 'true')
+#            
+#            logging.debug('connect to user\'s personal store')
+#            
+#            fconfig['activity'] = activity
+#            fconfig['focus'] = focus
+#            fconfig['social'] = social
+#            if request.GET.__contains__("funf_key"):
+#                fconfig['funf_key'] = request.GET['funf_key']
+#            db.funf.save(fconfig)
+#            
+#            logging.debug('disconnect to user\'s personal store')
+#            logging.debug('change funf config compelte')
+#            
+#        logging.debug('about to build funf config')
+#        config = buildConfigFile(fconfig, pp)
+#    finally:
+#        connection.disconnect()
+#    logging.debug('funf config:' + str(config))
+#        
+#    return authenticator.response(config)
+
     
 def buildConfigFile(fconfig, pp):
-    config = {}
-    config['name'] = 'DCAPS_Prototype'
-    config['version'] = 1
-    config['configUpdateUrl'] = "http://dcapsdev.media.mit.edu/api/changeFunfConfig"
-    config["configUpdatePeriod"] =600 
-    config["dataArchivePeriod"] = 600
-    config["dataUploadUrl"] = "http://dcapsdev.media.mit.edu/api/data"
-    config["dataUploadPeriod"] = 600
-    dataRequests = {}
-    if pp['overall_sharing_level'] > 0:
-        if fconfig['activity'] == True:
-            dataRequests["edu.mit.media.funf.probe.builtin.ActivityProbe"] = [{ "PERIOD": 15, "DURATION": 15 }]
-        if fconfig['focus'] == True:
-            dataRequests["edu.mit.media.funf.probe.builtin.ScreenProbe"] = [{}]
-        if fconfig['social'] == True:
-            dataRequests["edu.mit.media.funf.probe.builtin.SMSProbe"] = [{ "PERIOD": 60 }]
-            dataRequests["edu.mit.media.funf.probe.builtin.CallLogProbe"] = [{ "PERIOD": 60 }]
-    config['dataRequests'] = dataRequests
-    return config
+	response = HttpResponse(
+            content={'success':False},
+            content_type='application/json')
+        return response
+    #config = {}
+    #config['name'] = 'DCAPS_Prototype'
+    #config['version'] = 1
+    #config['configUpdateUrl'] = "http://dcapsdev.media.mit.edu/api/changeFunfConfig"
+    #config["configUpdatePeriod"] =600 
+    #config["dataArchivePeriod"] = 600
+    #config["dataUploadUrl"] = "http://dcapsdev.media.mit.edu/api/data"
+    #config["dataUploadPeriod"] = 600
+    #dataRequests = {}
+    #if pp['overall_sharing_level'] > 0:
+    #    if fconfig['activity'] == True:
+    #        dataRequests["edu.mit.media.funf.probe.builtin.ActivityProbe"] = [{ "PERIOD": 15, "DURATION": 15 }]
+    #    if fconfig['focus'] == True:
+    #        dataRequests["edu.mit.media.funf.probe.builtin.ScreenProbe"] = [{}]
+    #    if fconfig['social'] == True:
+    #        dataRequests["edu.mit.media.funf.probe.builtin.SMSProbe"] = [{ "PERIOD": 60 }]
+    #        dataRequests["edu.mit.media.funf.probe.builtin.CallLogProbe"] = [{ "PERIOD": 60 }]
+    #config['dataRequests'] = dataRequests
+    #return config
 
 def getDefaults(request):
-    logging.debug('GetDefaults')
+	response = HttpResponse(
+            content={'success':False},
+            content_type='application/json')
+        return response
+    #logging.debug('GetDefaults')
     #scope = AccessRange.objects.get(key="funf_write")
     #authenticator = JSONAuthenticator(scope=scope)
     #logging.debug(authenticator)
@@ -862,46 +862,46 @@ def getDefaults(request):
     #    authenticator.validate(request)
     #except AuthenticationException:
     #    return authenticator.error_response()
-    logging.debug('try/catch') 
-    
-    defaults = {}
-    try:
-        connection = pymongo.Connection()
-	
-        pk = "" 
-        if request.GET.__contains__('pk'):
-            logging.debug("extracting pk...")
-            pk = request.GET['pk']
-        else:
-            logging.debug('WARNING!!!  No user key provided, using default')
-            pk = "default"
-        db = connection["User_" + str(pk)]
-        #fconfig = findOrCreate('funf', db, emptyFunf)
-	fconfig = db.funf.find_one()
-        #pp = findOrCreate('personalPermissions', db, emptyPersonalPermissions)
-	pp = db.personalPermissions.find_one()
-	logging.debug('break')
-	logging.debug(pp)
-        defaults = getDefaultsDict(fconfig, pp)
-	pp['roles']['Family'] = defaults['Family']
-	pp['roles']['Peers'] = defaults['Peers']
-	pp['roles']['Care_Team'] = defaults['Care_Team']
-	fconfig['activity'] = defaults['activity']
-	fconfig['social'] = defaults['social']
-	fconfig['focus'] = defaults['focus']
-	db.personalPermissions.save(pp)
-	db.funf.save(fconfig)	
-    except Exception, e:
-        logging.debug( "Error: %s" % str(e) )
-    finally:
-        connection.disconnect()
-
-    result = json.dumps(defaults)
-    logging.debug(defaults)
-    response = HttpResponse(
-        content=result,
-        content_type='application/json')
-    return response
+#    logging.debug('try/catch') 
+#    
+#    defaults = {}
+#    try:
+#        connection = pymongo.Connection()
+#	
+#        pk = "" 
+#        if request.GET.__contains__('pk'):
+#            logging.debug("extracting pk...")
+#            pk = request.GET['pk']
+#        else:
+#            logging.debug('WARNING!!!  No user key provided, using default')
+#            pk = "default"
+#        db = connection["User_" + str(pk)]
+#        #fconfig = findOrCreate('funf', db, emptyFunf)
+#	fconfig = db.funf.find_one()
+#        #pp = findOrCreate('personalPermissions', db, emptyPersonalPermissions)
+#	pp = db.personalPermissions.find_one()
+#	logging.debug('break')
+#	logging.debug(pp)
+#        defaults = getDefaultsDict(fconfig, pp)
+#	pp['roles']['Family'] = defaults['Family']
+#	pp['roles']['Peers'] = defaults['Peers']
+#	pp['roles']['Care_Team'] = defaults['Care_Team']
+#	fconfig['activity'] = defaults['activity']
+#	fconfig['social'] = defaults['social']
+#	fconfig['focus'] = defaults['focus']
+#	db.personalPermissions.save(pp)
+#	db.funf.save(fconfig)	
+#    except Exception, e:
+#        logging.debug( "Error: %s" % str(e) )
+#    finally:
+#        connection.disconnect()
+#
+#    result = json.dumps(defaults)
+#    logging.debug(defaults)
+#    response = HttpResponse(
+#        content=result,
+#        content_type='application/json')
+#    return response
 
 def getDefaultsDict(fconfig, pp):
     defaults = {}
@@ -915,14 +915,6 @@ def getDefaultsDict(fconfig, pp):
     defaults['care_team'] = roles.get('care_team', True)
     return defaults
 
-def isTokenValid(request):
-    scope = AccessRange.objects.get(key="funf_write")
-    authenticator = JSONAuthenticator(scope=scope)
-    try:
-        authenticator.validate(request)
-    except AuthenticationException:
-        return authenticator.error_response()
-    return authenticator.response({})
     
 
 def data(request):
