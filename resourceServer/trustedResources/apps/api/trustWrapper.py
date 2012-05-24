@@ -1,7 +1,6 @@
 import pymongo
 import logging
 from pymongo import Connection
-from trustedResources.apps.account.models import *
 
 #TODO This trust wrapper implements sharing as defined in DARPA DCAPS project.  Eventually we will need to implement sharing fully defined at the PDS level, and not a shared database.
 def trustWrapper(pk, purpose, r_sid):
