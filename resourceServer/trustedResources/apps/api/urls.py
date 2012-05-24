@@ -15,6 +15,8 @@ urlpatterns = patterns('trustedResources.apps.api.views',
     (r'^get_funf_sensor_data$', 'getFunfSensorData'),
     (r'^set_reality_analysis_data$', 'setRealityAnalysisData'),
     (r'^get_reality_analysis_data$', 'getRealityAnalysisData'),
+    (r'^delete_reality_analysis_data$', 'deleteRealityAnalysisData'),
+    (r'^update_reality_analysis_data$', 'updateRealityAnalysisData'),
 
 )
 #handler404 = 'oauthManagement.apps.api.views.my_custom_404_view'

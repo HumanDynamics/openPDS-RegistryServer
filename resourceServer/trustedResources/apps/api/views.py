@@ -33,6 +33,15 @@ import sys
 
 upload_dir = '/data/temp'
 
+
+class MissingParameterError(Exception):
+	def __init__(self, value):
+		self.value = value
+		self.message = value
+	def __str__(self):
+		return repr(self.value)
+
+
 def log_401(request):
    return {"error": "four o one"}
 
@@ -262,22 +271,81 @@ def setRealityAnalysisData(request):
 
 
 def getRealityAnalysisData(request):
-    import pydevd;pydevd.settrace('18.189.24.242',port=5678)
-    response_content = HttpResponse(
-	            content={"success":"fail"},
-	            content_type='application/json')
+    #import pydevd;pydevd.settrace('18.189.24.242',port=5678)
+    result = list()
     try:
         connection = pymongo.Connection()
         db = connection['User_5']
-        result = read_mongo(db,"reality_analysis_service",{"events":{'$exists':True}},{"events":1})
+	mask=""
+        if request.GET.__contains__('document_key'):
+	    mask = str(request.GET['document_key'])
+	else:
+	    raise MissingParameterError('missing document_key')
+	    #raise Exception('message', 'document_key was unspecified')
+        result = read_mongo(db,"reality_analysis_service",{mask:{'$exists':True}},{mask:1})
 
-        response_content = json.dumps(result.pop(), default=json_util.default)
+	if result.__len__() == 0:
+	    result = [{'success':True, 'message':'no documents with specified key exist'}]
+    except Exception as e:
+	result.append({'success':False, 'error_message':e.message})
     finally:
         connection.disconnect()
+	response_content = json.dumps(result.pop(), default=json_util.default)
         response = HttpResponse(
             content=response_content,
             content_type='application/json')
     return response
+
+def updateRealityAnalysisData(request):
+#    import pydevd;pydevd.settrace('18.189.24.242',port=5678)
+    result = list()
+    try:
+        connection = pymongo.Connection()
+        db = connection['User_5']
+	data = request.raw_post_data
+	json_data = json.loads(data)
+	mask = None
+	if request.GET.__contains__('document_key'):
+	    mask = str(request.GET['document_key'])
+	else:
+  	    raise Exception('message', 'document_key was unspecified')
+        query_result = update_mongo(db,"reality_analysis_service",mask, json_data)
+	result= query_result
+    except Exception as e:
+	result = {'success':False,'error_message':e.message}
+    finally:
+        connection.disconnect()
+	response_content = json.dumps(result, default=json_util.default)
+        response = HttpResponse(
+            content=response_content,
+            content_type='application/json')
+        return response
+
+def deleteRealityAnalysisData(request):
+#    import pydevd;pydevd.settrace('18.189.24.242',port=5678)
+    response_content = HttpResponse(
+                    content={"success":"fail"},
+                    content_type='application/json')
+    try:
+        connection = pymongo.Connection()
+        db = connection['User_5']
+	key = None
+        if request.GET.__contains__('document_key'):
+	     key = request.GET['document_key']
+	else:
+            raise Exception('message', 'document_key was unspecified')	     
+        result = delete_mongo(db,"reality_analysis_service",key)
+
+    except Exception as e:
+        result = {'success':False,'error_message':e.message}
+    finally:	
+        connection.disconnect()
+        response_content = json.dumps(result, default=json_util.default)
+        response = HttpResponse(
+            content=response_content,
+            content_type='application/json')
+        return response
+
 
 
 
@@ -350,18 +418,31 @@ def getFunfSensorData(request):
             content_type='application/json')
         return response
 
-def read_mongo(db, collection, mask={},exclude={}):
+#Mongo Interface Operations
+
+#Read all documents in a mongo database, for the specified collection, mask, and exclusions.
+#
+#Input Parameters
+#db - an open connection to a mongo database
+#collection - a string specifying the mongo collection to read from
+#mask - the query mask.  The query will return all documents that fit the mask, minus the parts eliminated by the exclude parameter
+#include - a {<"key">: boolean} list of objects, set to 1 if the key should be included, and 0 if included.
+#
+#Return Elements
+#on success - A python-list of python-dictionary items containing the query result.
+#on failure - A python-list of python dictionary items containing the failure information.
+def read_mongo(db, collection, mask={},include={}):
     query_result = None
     response = {}
     response_list = list()
     if(collection is "funf_data"):
 	query_result = db.funf_data.find(mask)
     elif(collection is "reality_analysis_service"):
-	query_result = db.reality_analysis_service.find(mask,exclude)
+	query_result = db.reality_analysis_service.find(mask,include)
     elif(collection is "personalPermissions"):
-	query_result = db.personalPermissions.find(mask,exclude)
+	query_result = db.personalPermissions.find(mask,include)
     elif(collection is "logCollection"):
-	query_result = db.logCollection.find(mask,exclude)
+	query_result = db.logCollection.find(mask,include)
     else:
 	query_result = None
 
@@ -371,6 +452,46 @@ def read_mongo(db, collection, mask={},exclude={}):
 	response_list.append(result)
 
     return response_list
+
+def delete_mongo(db, collection, key):
+    is_safe=True
+    if(collection is "funf_data"):
+	query_result = db.funf_data.remove({key:1}, safe=is_safe)
+    elif(collection is "reality_analysis_service"):
+	if key == "all":
+		query_result = db.reality_analysis_service.remove({}, safe=is_safe)
+	else:
+		query_result = db.reality_analysis_service.remove({key:1}, safe=is_safe)
+    elif(collection is "personalPermissions"):
+	query_result = db.personalPermissions.remove({key:1}, safe=is_safe)
+    elif(collection is "logCollection"):
+	query_result = db.logCollection.remove({key:1}, safe=is_safe)
+    else:
+	return False
+
+    return query_result
+
+def update_mongo(db, collection, key_mask, data):
+    result = list()
+   
+    if(collection is "funf_data"):
+        query_result = db.funf_data.update({key_mask: {'$exists':True}}, data)
+    elif(collection is "reality_analysis_service"):
+        query_result = db.reality_analysis_service.update({key_mask: {'$exists':True}}, {'$set': data}, upsert=True, safe=True)
+    elif(collection is "personalPermissions"):
+        query_result = db.personalPermissions.update({key_mask: {'$exists':True}}, data)
+    elif(collection is "logCollection"):
+        query_result = db.logCollection.update({key_mask: {'$exists':True}}, data)
+    else:
+        raise Exception('message','collection specified is unknown to update_mongo')
+	    
+    #except Exception as e:
+	# return a dictionary error
+	#result = {'success':False,'error_message': e.message}
+    #finally:
+    result = query_result
+	# return a list of results
+    return result
 
 def write_mongo(db, collection, data):
     
