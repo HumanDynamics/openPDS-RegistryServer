@@ -13,7 +13,8 @@ from oauth2app.models import AccessRange
 #from account.models import *
 from mongoengine import *
 from datastoreModels import *
-from django.utils import simplejson as json
+from trustWrapper import *
+from django.utils import simplejson as json_simple
 import logging, random, hashlib, string
 #from decrypt import directDecrypt
 import dbmerge, os
@@ -27,6 +28,8 @@ import shutil
 import time
 from bson import json_util
 import json, ast
+import sys
+#import xmlrpclib
 
 upload_dir = '/data/temp'
 
@@ -36,16 +39,6 @@ def log_401(request):
 def log_403(request):
     logging.debug('log 403')
     
-    #validate REST
-    #scope = AccessRange.objects.get(key="reality_analysis")
-    #authenticator = JSONAuthenticator(scope=scope)
-
-    #try:
-    #    authenticator.validate(request)
-    #except AuthenticationException:
-#	logging.debug(authenticator.error_response())
-#        return authenticator.error_response()
-    #datastore_owner = ""
     try:
         datastore_owner = request.GET['datastore_owner']
     except:
@@ -160,6 +153,7 @@ def log_404(request):
 
     pk = str(authenticator.user.pk)
     logging.debug(pk)
+    logging.debug('pre-get_averages query')
     #validate permissions
     try:
 	# connecting to Mongo
@@ -191,17 +185,12 @@ def log_404(request):
             "success":True, "error":"Page not found"})
     return authenticator.response({ "success": False})
 
-
-
-def getResults(request):
-    logging.debug('get results')
-    import pydevd;pydevd.settrace('18.189.24.242',stdoutToServer=True, stderrToServer=True,port=5679)
-    result = ""
-    #validate permissions
+def setRealityAnalysisData(request):
+    logging.debug('set reality analysis data')
+    #import pydevd;pydevd.settrace('18.189.24.242',port=5678)
     try:
-        connection = pymongo.Connection()
-        #pk = str(authenticator.user.pk)
-        pk = "" 
+	connection = pymongo.Connection()
+	pk = ""
         if request.GET.__contains__('pk'):
             logging.debug("extracting pk...")
             pk = request.GET['pk']
@@ -209,7 +198,6 @@ def getResults(request):
             logging.debug('WARNING!!!  No user key provided, using default')
             pk = "default"
 
-        logging.debug('getting results')
         if request.GET.__contains__('datastore_owner'):
             logging.debug('validating...')
             pds_id = request.GET['datastore_owner']
@@ -227,16 +215,22 @@ def getResults(request):
             logging.debug('calling self trust wrapper...')
             tw_result = trustWrapperSelf(pk, purpose)
             logging.debug(tw_result)
-            db = connection["User_5"]
             if tw_result:
-                if request.GET.__contains__('probe'):
-                    logging.debug('calling readprobe')
-                    result = reality_analysis_results_readprobe(db,request.GET['probe'])
-                else:
-		    logging.debug('calling read')
-                    result = reality_analysis_results_read(db)
+		
+		insert_string = json.loads(request.raw_post_data)
+		logging.debug('next....')
+                db = connection["User_5"]
+		db.reality_analysis_service.insert(insert_string)
+		logging.debug('inserted raw data')
 
-
+		result = '{"success":true}'
+	    else:
+		result = '{"success":false}'
+    except:
+	error_string = "Unexpected error:", sys.exc_info()[0]
+  	result = '{"success":false}'
+	logging.debug(error_string)
+	raise
         # connecting to Mongo
         #logCollection = db.log
         #al_entry = al_log(request.path, str(scope), False, datastore_owner, pk, purpose, tf_request)
@@ -245,85 +239,300 @@ def getResults(request):
         #logCollection.insert(al_entry)
     finally:
         connection.disconnect()
-        logging.debug(result)
         response = HttpResponse(
             content=result,
             content_type='application/json')
         #return authenticator.response(result)
         return response
 
-    return authenticator.response({ "success": False})
+
+	    
+    status_json = {"success": True}
+    result = json.dumps(status_json)
+    response = HttpResponse(
+        content=result,
+        content_type='application/json')
+    #return authenticator.response(result)
+    return response
+
+#def getRelation(request)
+#    pk = ""
+#    datastore_owner = ""
+    #TODO extract pk and datastore logic
 
 
-def trustWrapperSelf(pk, purpose):
-    logging.debug('checking against self Trust Wrapper')
+def getRealityAnalysisData(request):
+    import pydevd;pydevd.settrace('18.189.24.242',port=5678)
+    response_content = HttpResponse(
+	            content={"success":"fail"},
+	            content_type='application/json')
     try:
         connection = pymongo.Connection()
-        db = connection["User_" + pk]
-        logging.debug("wrapping")
-        permissions = db.personalPermissions.find_one()
-        #log request
-        return True
-    except TypeError as e:
-        logging.debug('error...')
-        logging.debug(e)
+        db = connection['User_5']
+        result = read_mongo(db,"reality_analysis_service",{"events":{'$exists':True}},{"events":1})
+
+        response_content = json.dumps(result.pop(), default=json_util.default)
     finally:
-        logging.debug('disconnecting...')
         connection.disconnect()
-    return False
-
-def trustWrapper(pk,pds_sid, purpose):
-    logging.debug('checking against Trust Wrapper')
-    try:
-        #pds_id = sid_to_id(pds_sid)
-        host = id_to_sid(pk, pds_sid)
-        logging.debug("returned from id mapper")
-        connection = pymongo.Connection()
-        logging.debug("made connection")
-        db = connection["User_" + str(host.user.id)]
-        logging.debug("wrapping")
-        permissions = db.personalPermissions.find_one()
-        sharing_level = permissions['overall_sharing_level']
-        permitted_roles = permissions['uidRoles'][requester_sid]
-        db_RA = connection["RealityAnalysis"]
-
-        for role in permitted_roles:
-            if (db_RA.mapping.count({"ROLE":role, "LEVEL": sharing_level, "PURPOSE": purpose}) > 0):
-                return True
-    except TypeError as e:
-        logging.debug('error...')
-        logging.debug(e)
-    finally:
-        logging.debug('disconnecting...')
-        connection.disconnect()
-    return False
-
-
-def reality_analysis_results_read(db):
-    logging.debug("getting results...")
-    response = ""
-    try:
-        #Get Activity
-        query_results = db.funf_data.find()
-        for result in query_results:
-	    logging.debug(result)
-            response += json.dumps(result, default=json_util.default)
-
-    except Error as e:
-        logging.debug(e)
-    finally:
-        logging.debug(response)
+        response = HttpResponse(
+            content=response_content,
+            content_type='application/json')
     return response
 
 
 
+
+
+def getFunfSensorData(request):
+    logging.debug('get results')
+    #import pydevd;pydevd.settrace('18.189.24.242',port=5678)
+
+
+    result = {}
+    response_content={"error": "get_results failed"}
+    purpose = "reality_analysis_funf_read"
+    #validate permissions
+    try:
+        connection = pymongo.Connection()
+
+#used for xml-rpc validation of oauth requests
+	#rpc_srv = xmlrpclib.ServerProxy("http://dcapsdev.media.mit.edu")
+	#json_response = rpc_srv.validate(request)
+	#json_data = dumps(json_response)
+	#datastore_owner = json_data['datastore_owner']
+	#pk = json_data['pk']
+	#scope = json_data['scope']
+	scope = "dc_demo"
+        pk = ""
+	pds_id = ""
+	purpose = ""
+	tf_request = "get results default (placeholder for more descriptive parameter)"
+	db = {}
+        try:
+	    pk = request.GET['pk']
+	    scope = request.GET['scope']
+	except Error as e:
+            response = HttpResponse(
+                content={"error":"no user key specified"},
+                content_type='application/json')
+            return response
+
+        if request.GET.__contains__('datastore_owner'):
+            pds_id = request.GET['datastore_owner']
+	    #TODO If we decide to allow Funf data sharing
+            purpose = "someone_allowed_funf_data_sharing"
+	    db = connection["User_"+str(pds_id)]
+            if trustWrapper(pk, purpose, pds_id):
+                if request.GET.__contains__('probe'):
+                    result = read_mongo(db,"funf_data",{"PROBE":request.GET['probe']})
+                else:
+                    result = read_mongo(db,"funf_data")
+        else:
+	    pds_id = pk
+            tw_result = trustWrapperSelf(pk, purpose)
+            db = connection["User_"+str(pds_id)]
+            if tw_result:
+                if request.GET.__contains__('probe'):
+		    result = read_mongo(db,"funf_data",{"PROBE":request.GET['probe']})
+                else:
+		    result = read_mongo(db,"funf_data")
+
+        #Audit Log
+	al_entry = al_log(request.path, str(scope), False, pds_id, pk, purpose, tf_request)
+
+        al_entry['trust_wrapper_result'] = 'allow'
+        logCollection = write_mongo(db, "logCollection",al_entry)
+	response_content = json.dumps(result, default=json_util.default)
+    finally:
+        connection.disconnect()
+        response = HttpResponse(
+            content=response_content,
+            content_type='application/json')
+        return response
+
+def read_mongo(db, collection, mask={},exclude={}):
+    query_result = None
+    response = {}
+    response_list = list()
+    if(collection is "funf_data"):
+	query_result = db.funf_data.find(mask)
+    elif(collection is "reality_analysis_service"):
+	query_result = db.reality_analysis_service.find(mask,exclude)
+    elif(collection is "personalPermissions"):
+	query_result = db.personalPermissions.find(mask,exclude)
+    elif(collection is "logCollection"):
+	query_result = db.logCollection.find(mask,exclude)
+    else:
+	query_result = None
+
+    for (idx, result) in enumerate(query_result):
+        if idx not in response:
+   	    response[idx] = list()
+	response_list.append(result)
+
+    return response_list
+
+def write_mongo(db, collection, data):
+    
+    if(collection is "funf_data"):
+	query_result = db.funf_data.insert(data)
+    elif(collection is "reality_analysis_service"):
+	query_result = db.reality_analysis_service.insert(data)
+    elif(collection is "personalPermissions"):
+	query_result = db.personalPermissions.insert(data)
+    elif(collection is "logCollection"):
+	query_result = db.logCollection.insert(data)
+    else:
+	return False
+
+    return True
+
+def al_log(script, scope, toggle, owner, requester, purpose, tf_request_entry):
+    al_entry = {}
+    al_entry['script'] = script
+    al_entry['scope'] = str(scope)
+    al_entry['system_entity_toggle'] = False
+    # the requester must be the datastore_owner
+    al_entry['datastore_owner'] = owner
+    al_entry['requester'] = requester
+    al_entry['purpose'] = purpose
+    al_entry['tf_request'] = tf_request_entry
+
+    return al_entry
+
+def initializeScopeToPurpose(db):
+
+    #Scope to Purpose
+    db.purpose.insert({'SCOPE': 'funf_write', 'PURPOSE': 'funf_write'})
+    db.purpose.insert({'SCOPE': 'reality_analysis', 'PURPOSE': 'reality_analysis_funf_read'})
+    db.purpose.insert({'SCOPE': 'reality_analysis', 'PURPOSE': 'reality_analysis_funf_delete'})
+    db.purpose.insert({'SCOPE': 'reality_analysis', 'PURPOSE': 'reality_analysis_results_read'})
+    db.purpose.insert({'SCOPE': 'reality_analysis', 'PURPOSE': 'reality_analysis_share_results_read'})
+    db.purpose.insert({'SCOPE': 'reality_analysis', 'PURPOSE': 'reality_analysis_settings_write'})
+    db.purpose.insert({'SCOPE': 'reality_analysis', 'PURPOSE': 'reality_analysis_share_answers_read'})
+    db.purpose.insert({'SCOPE': 'reality_analysis_service', 'PURPOSE': 'reality_analysis_modeling_read'})
+    db.purpose.insert({'SCOPE': 'reality_analysis_service', 'PURPOSE': 'reality_analysis_anon_aggr_read'})
+    db.purpose.insert({'SCOPE': 'reality_analysis_service', 'PURPOSE': 'reality_analysis_service_write'})
+
+    #Purpose to Role
+    db.purpose.insert({'ROLE': 'Family', 'PURPOSE': 'reality_analysis_share_results_read'})
+    db.purpose.insert({'ROLE': 'Peers', 'PURPOSE': 'reality_analysis_share_results_read'})
+    db.purpose.insert({'ROLE': 'Care_Team', 'PURPOSE': 'reality_analysis_share_results_read'})
+    db.purpose.insert({'ROLE': 'Family', 'PURPOSE': 'reality_analysis_share_answers_read'})
+    db.purpose.insert({'ROLE': 'Peers', 'PURPOSE': 'reality_analysis_share_answers_read'})
+    db.purpose.insert({'ROLE': 'Care_Team', 'PURPOSE': 'reality_analysis_share_answers_read'})
+    db.purpose.insert({'ROLE': 'Reality_Analysis_Service', 'PURPOSE': 'reality_analysis_modeling_read'})
+    db.purpose.insert({'ROLE': 'Reality_Analysis_Service', 'PURPOSE': 'reality_analysis_anon_aggr_read'})
+    db.purpose.insert({'ROLE': 'Reality_Analysis_Service', 'PURPOSE': 'reality_analysis_service_write'})
+
+    #Sharing to Purpose
+    db.purpose.insert({'SHARING': 1, 'PURPOSE': 'funf_write'})
+    db.purpose.insert({'SHARING': 1, 'PURPOSE': 'reality_analysis_funf_read'})
+    db.purpose.insert({'SHARING': 1, 'PURPOSE': 'reality_analysis_funf_delete'})
+    db.purpose.insert({'SHARING': 1, 'PURPOSE': 'reality_analysis_results_read'})
+    db.purpose.insert({'SHARING': 1, 'PURPOSE': 'reality_analysis_modeling_read'})
+    db.purpose.insert({'SHARING': 1, 'PURPOSE': 'reality_analysis_service_write'})
+
+    db.purpose.insert({'SHARING': 2, 'PURPOSE': 'funf_write'})
+    db.purpose.insert({'SHARING': 2, 'PURPOSE': 'reality_analysis_funf_read'})
+    db.purpose.insert({'SHARING': 2, 'PURPOSE': 'reality_analysis_funf_delete'})
+    db.purpose.insert({'SHARING': 2, 'PURPOSE': 'reality_analysis_results_read'})
+    db.purpose.insert({'SHARING': 2, 'PURPOSE': 'reality_analysis_modeling_read'})
+    db.purpose.insert({'SHARING': 2, 'PURPOSE': 'reality_analysis_service_write'})
+    db.purpose.insert({'SHARING': 2, 'PURPOSE': 'reality_analysis_share_results_read'})
+    db.purpose.insert({'SHARING': 2, 'PURPOSE': 'reality_analysis_anon_aggr_read'})
+
+    db.purpose.insert({'SHARING': 3, 'PURPOSE': 'funf_write'})
+    db.purpose.insert({'SHARING': 3, 'PURPOSE': 'reality_analysis_funf_read'})
+    db.purpose.insert({'SHARING': 3, 'PURPOSE': 'reality_analysis_funf_delete'})
+    db.purpose.insert({'SHARING': 3, 'PURPOSE': 'reality_analysis_results_read'})
+    db.purpose.insert({'SHARING': 3, 'PURPOSE': 'reality_analysis_modeling_read'})
+    db.purpose.insert({'SHARING': 3, 'PURPOSE': 'reality_analysis_service_write'})
+    db.purpose.insert({'SHARING': 3, 'PURPOSE': 'reality_analysis_share_results_read'})
+    db.purpose.insert({'SHARING': 3, 'PURPOSE': 'reality_analysis_anon_aggr_read'})
+    db.purpose.insert({'SHARING': 3, 'PURPOSE': 'reality_analysis_answers_read'})
+    
+    return True
+
+def initializeRealityAnalysis(db):
+    #TODO should call back to the registry for default settings
+    db.realityAnalysis.insert({'ROLE': 1, 'SHARING': 2, 'PURPOSE': 3})
+    return
+
+def checkSharingToPurpose(sharing, purpose, db):
+    query_result = db.purpose.find({'SHARING':sharing, 'PURPOSE':purpose})
+    if(query_result.count() < 1):
+	return False
+    else:
+	return True
+    
+
+def checkScopeToPurpose(scope, purpose, db):
+    query_result = db.purpose.find({'SCOPE':sharing, 'PURPOSE':purpose})
+    if(query_result.count() < 1):
+	return False
+    else:
+	return True
+    
+def checkRoleToPurpose(role, purpose, db):    
+    query_result = db.purpose.find({'ROLE':role, 'PURPOSE':purpose})
+    if(query_result.count() < 1):
+	return False
+    else:
+	return True
+
+def getRoleRelationships(requestor, db):
+    roles = db.personalPermissions.find({},{'uidRoles': 1})
+    result = []
+    if (roles.count() == 0):
+	return result
+    elif (roles.count() > 1):
+	raise Exception('role relationships are formatted incorrectly')
+    else:
+	result = roles[requestor]
+    return result
+    
+def execute_tw_request(db, purpose, requestor):
+    relationships = getRoleRelationships(requestor, db)
+    if (relationships.count() > 0):
+        for role in relationships:
+	    if checkRoleToPurpose(role, purpose, db):
+		#TODO SUCCESS
+		return True
+    #TODO FAIL
+    return False
+
+def reality_analysis_results_read(db):
+    logging.debug("getting results...")
+    response = {}
+    try:
+        #Get Activity
+	query_results = db.funf_data.find()
+        for (idx, result) in enumerate(query_results):
+	    if idx not in response:
+		response[idx] = list()
+	    response[idx].append(result)
+
+    except Error as e:
+        logging.debug(e)
+    except:
+	logging.debug('Unexpected error:', sys.exc_info()[0])
+	raise
+    finally:
+        logging.debug(response)
+    return response
+
 def reality_analysis_results_readprobe(db, probe):
+    logging.debug("getting results probe...")
     response = ""
     try:
         #Get Activity
 	query_results = db.funf_data.find({'PROBE':probe})
-        for result in query_results:
-            response += json.dumps(result, default=json_util.default)
+        for (idx, result) in enumerate(query_results):
+	    if idx not in response:
+		response[idx] = list()
+	    response[idx].append(result)
+		
     except Error as e:
         logging.debug(e)
     finally:
@@ -336,54 +545,127 @@ def setPermission(name, pp, permission):
     roles[name] = permission
     return pp
 
-def changeRolePermissions(request):
-    logging.debug('change role permissions')
-    scope = AccessRange.objects.get(key="funf_write")
-    authenticator = JSONAuthenticator(scope=scope)
+def setRolePermissions(request):
+    logging.debug('set role permissions')
+    insert_string={}    
     try:
-        authenticator.validate(request)
-    except AuthenticationException:
-	logging.debug(authenticator.error_response())
-        return authenticator.error_response()
-        
-    try:
-        (connection, db) = connectToMongoDB(str(authenticator.user.pk))
-        pp = findOrCreate('personalPermissions', db, emptyPersonalPermissions)
-        if request.method == 'GET':
-            if request.GET.__contains__('family'):
-                pp = setPermission('family', pp, request.GET['family'] == 'true')
-            if request.GET.__contains__('peers'):
-                pp = setPermission('peers', pp, request.GET['peers'] == 'true')
-            if request.GET.__contains__('care_team'):
-                pp = setPermission('care_team', pp, request.GET['care_team'] == 'true')
-            db.personalPermissions.save(pp)
+        connection = pymongo.Connection()
+        #pk = str(authenticator.user.pk)
+        pk = "" 
+        if request.GET.__contains__('pk'):
+            logging.debug("extracting pk...")
+            pk = request.GET['pk']
+        else:
+            logging.debug('WARNING!!!  No user key provided, using default')
+            pk = "default"
+
+        logging.debug('writing self settings')
+        purpose = "reality_analysis_settings_write"
+        logging.debug('calling self trust wrapper...')
+        tw_result = trustWrapperSelf(pk, purpose)
+        conn_string = "User_"+str(pk)
+        logging.debug(conn_string)
+        db = connection[conn_string]
+	logging.debug(tw_result)
+        if tw_result:
+    	    pp = db.personalPermissions.find()
+	    logging.debug('found or created personalPermissions')
+    	    if request.method == 'POST':
+		insert_string = json.JSONDecoder().decode(convert_string(request.raw_post_data))
+            	db.personalPermissions.update({"permission_type":"roles"},{"permission_type":"roles","roles":insert_string},True,True)
+	    else:
+	        logging.debug(request.method)
+
+
+        # connecting to Mongo
+        #logCollection = db.log
+        #al_entry = al_log(request.path, str(scope), False, datastore_owner, pk, purpose, tf_request)
+
+        #al_entry['trust_wrapper_result'] = 'allow'
+        #logCollection.insert(al_entry)
+
+    except:
+        logging.debug(sys.exc_info()[0])
     finally:
         connection.disconnect()
-        
-        return authenticator.response({
-            "success":True})
+	logging.debug(json.dumps(insert_string))
+        response = HttpResponse(
+            content=json.dumps(insert_string),
+            content_type='application/json')
+        #return authenticator.response(result)
+        return response
+
     return authenticator.response({ "success": False})
+
+
     
 def changeSharingLevel(request):
-    scope = AccessRange.objects.get(key="funf_write")
-    authenticator = JSONAuthenticator(scope=scope)
+       
+    logging.debug('set sharing level')
+    insert_string={}
     try:
-        authenticator.validate(request)
-    except AuthenticationException:
-        return authenticator.error_response()
-        
-    try:
-        (connection, db) = connectToMongoDB(str(authenticator.user.pk))
-        pp = findOrCreate('personalPermissions', db, emptyPersonalPermissions)
-        if request.method == 'GET' and request.GET.__contains__('level'):
-            level = int(request.GET['level'])
-            if level >= 0 and level <= 3:
-                pp['overall_sharing_level'] = level
-                db.personalPermissions.save(pp)
-                return authenticator.response({"success": True})
+        connection = pymongo.Connection()
+        #pk = str(authenticator.user.pk)
+        pk = "" 
+        if request.GET.__contains__('pk'):
+            logging.debug("extracting pk...")
+            pk = request.GET['pk']
+        else:
+            logging.debug('WARNING!!!  No user key provided, using default')
+            pk = "default"
+
+        logging.debug('writing self sharing settings')
+        purpose = "reality_analysis_settings_write"
+        logging.debug('calling self trust wrapper...')
+        tw_result = trustWrapperSelf(pk, purpose)
+        conn_string = "User_"+str(pk)
+        logging.debug(conn_string)
+        db = connection[conn_string]
+	logging.debug(tw_result)
+        if tw_result:
+	    if request.GET.__contains__('level'):
+   	        insert_string = {"overall_sharing_level": request.GET['level']}	
+            	db.personalPermissions.update({"permission_type":"sharing"},{"permission_type":"sharing","sharing":insert_string},True,True)
+	    else:
+	        logging.debug(request.method)
+
+
+        # connecting to Mongo
+        #logCollection = db.log
+        #al_entry = al_log(request.path, str(scope), False, datastore_owner, pk, purpose, tf_request)
+
+        #al_entry['trust_wrapper_result'] = 'allow'
+        #logCollection.insert(al_entry)
+
+    except:
+        logging.debug(sys.exc_info()[0])
     finally:
         connection.disconnect()
-    return authenticator.response({"success": False})
+	logging.debug(json.dumps(insert_string))
+        response = HttpResponse(
+            content=json.dumps(insert_string),
+            content_type='application/json')
+        #return authenticator.response(result)
+        return response
+
+    return authenticator.response({ "success": False})
+
+
+
+
+ 
+#    try:
+#        (connection, db) = connectToMongoDB(str(authenticator.user.pk))
+#        pp = findOrCreate('personalPermissions', db, emptyPersonalPermissions)
+#        if request.method == 'GET' and request.GET.__contains__('level'):
+#            level = int(request.GET['level'])
+#            if level >= 0 and level <= 3:
+#                pp['overall_sharing_level'] = level
+#                db.personalPermissions.save(pp)
+#                return authenticator.response({"success": True})
+#    finally:
+#        connection.disconnect()
+#    return authenticator.response({"success": False})
     
     
     
@@ -451,28 +733,38 @@ def buildConfigFile(fconfig, pp):
 
 def getDefaults(request):
     logging.debug('GetDefaults')
-    scope = AccessRange.objects.get(key="funf_write")
-    authenticator = JSONAuthenticator(scope=scope)
-    logging.debug(authenticator)
-    logging.debug(scope)
-    try:
-        authenticator.validate(request)
-    except AuthenticationException:
-        return authenticator.error_response()
+    #scope = AccessRange.objects.get(key="funf_write")
+    #authenticator = JSONAuthenticator(scope=scope)
+    #logging.debug(authenticator)
+    #logging.debug(scope)
+    #try:
+    #    authenticator.validate(request)
+    #except AuthenticationException:
+    #    return authenticator.error_response()
     logging.debug('try/catch') 
     
     defaults = {}
     try:
-        # (connection, db) = connectToMongoDB(str(authenticator.user.pk))
-        # connecting to Mongo
         connection = pymongo.Connection()
-        db = connection["User_" + str(authenticator.user.pk)]
-        fconfig = findOrCreate('funf', db, emptyFunf)
-        pp = findOrCreate('personalPermissions', db, emptyPersonalPermissions)
+	
+        pk = "" 
+        if request.GET.__contains__('pk'):
+            logging.debug("extracting pk...")
+            pk = request.GET['pk']
+        else:
+            logging.debug('WARNING!!!  No user key provided, using default')
+            pk = "default"
+        db = connection["User_" + str(pk)]
+        #fconfig = findOrCreate('funf', db, emptyFunf)
+	fconfig = db.funf.find_one()
+        #pp = findOrCreate('personalPermissions', db, emptyPersonalPermissions)
+	pp = db.personalPermissions.find_one()
+	logging.debug('break')
+	logging.debug(pp)
         defaults = getDefaultsDict(fconfig, pp)
-	pp['roles']['family'] = defaults['family']
-	pp['roles']['peers'] = defaults['peers']
-	pp['roles']['care_team'] = defaults['care_team']
+	pp['roles']['Family'] = defaults['Family']
+	pp['roles']['Peers'] = defaults['Peers']
+	pp['roles']['Care_Team'] = defaults['Care_Team']
 	fconfig['activity'] = defaults['activity']
 	fconfig['social'] = defaults['social']
 	fconfig['focus'] = defaults['focus']
@@ -482,7 +774,13 @@ def getDefaults(request):
         logging.debug( "Error: %s" % str(e) )
     finally:
         connection.disconnect()
-    return authenticator.response(defaults)
+
+    result = json.dumps(defaults)
+    logging.debug(defaults)
+    response = HttpResponse(
+        content=result,
+        content_type='application/json')
+    return response
 
 def getDefaultsDict(fconfig, pp):
     defaults = {}
@@ -492,7 +790,7 @@ def getDefaultsDict(fconfig, pp):
     defaults['social'] = fconfig['social']
     roles = pp['roles']
     defaults['family'] = roles.get('family', True)
-    defaults['peers'] = roles.get('peers', True)
+    defaults['Peers'] = roles.get('Peers', True)
     defaults['care_team'] = roles.get('care_team', True)
     return defaults
 
@@ -507,18 +805,22 @@ def isTokenValid(request):
     
 
 def data(request):
-    scope = AccessRange.objects.get(key="funf_write")
-    authenticator = JSONAuthenticator(scope=scope)
-    try:
-        authenticator.validate(request)
-    except AuthenticationException:
-        return authenticator.error_response()
+#    scope = AccessRange.objects.get(key="funf_write")
+#    authenticator = JSONAuthenticator(scope=scope)
+#    try:
+#        authenticator.validate(request)
+#    except AuthenticationException:
+#        return authenticator.error_response()
     logging.debug('receiving data')
     for filename, file in request.FILES.items():
         logging.debug('in')
 
-        pk = str(authenticator.user.pk)
-	#pk = "12"
+        pk = "" 
+        if request.GET.__contains__('pk'):
+            logging.debug("extracting pk...")
+            pk = request.GET['pk']
+        else:
+            logging.debug('WARNING!!!  No user key provided, using default')
 	try:
 		# connecting to Mongo
 		connection = pymongo.Connection()
@@ -571,7 +873,10 @@ def data(request):
             #dbmerge.merge((tempFilename, oldfile), merged_file, overwrite=True, attempt_salvage=True)
             
 
-    return authenticator.response({})
+    response = HttpResponse(
+        content={"success":True},
+        content_type='application/json')
+    return response
     
 TMP_FILE_SALT = '2l;3edF34t34$#%2fruigduy23@%^thfud234!FG%@#620k'
 TEMP_DATA_LOCATION = "/data/temp/"
@@ -646,38 +951,48 @@ def convert_string(s):
 def get_sharing_level(pk):
     connection = pymongo.Connection()
     db = connection["User_" + pk]
-    collection = db.personalPermissions
-    out = collection.find_one()
-    return out['overall_sharing_level']
+    sharing_settings = db.personalPermissions.find_one({"permission_type":"sharing"})
+    logging.debug(sharing_settings) 
+    return sharing_settings['sharing']['overall_sharing_level']
 
 def get_personal_sharing_levels(pk):
     connection = pymongo.Connection()
     db = connection["User_" + pk]
     collection = db.funf
     out = collection.find_one()
+    logging.debug('personal sharing levels')
+    if out == None:
+	insert_string = {'activity':False, 'social':False, 'focus':False, 'funf_key' :'changeme'}
+        db.funf.insert(insert_string)
+        logging.debug(insert_string['activity'])
+    try:
+        #out = json_simple.loads(str(out))
+        logging.debug(out['activity'])
+    except Exception as ex:
+	logging.debug("EXCEPTION")
+	logging.debug(ex)
     return out
 
 def get_sharing_groups(pk):
     connection = pymongo.Connection()
     db = connection["User_" + pk]
     collection = db.personalPermissions
-    out = collection.find_one()
+    out = collection.find_one({"permission_type":"roles"})
+    if out == None:
+        insert_string = {'activity':False, 'social':False, 'focus':False, 'funf_key' :'changeme'}
+        db.funf.insert(insert_string)
+        logging.debug(insert_string['activity'])
+
     return out
 
     
 @csrf_exempt
 def viz(request):
-    key = "reality_analysis"
-    scope = AccessRange.objects.get(key="reality_analysis")
-    logging.debug('post-access')
-    authenticator = JSONAuthenticator(scope=scope)
-    logging.debug('post-authentication')
-    try:
-        authenticator.validate(request)
-    except AuthenticationException:
-        return authenticator.error_response()
     logging.debug('visualizing data')
-    pk = str(authenticator.user.pk)
+    pk = "" 
+    if request.GET.__contains__('pk'):
+         logging.debug("extracting pk...")
+         pk = request.GET['pk']
     logging.debug('post-auth')
     if pk:#uuid and appToken and appTime:
         #ACCESS THE API!!!
@@ -689,13 +1004,13 @@ def viz(request):
         try:
 	    
        	    levels = get_personal_sharing_levels(pk)
+	    logging.debug(levels)
 	    groups = get_sharing_groups(pk)
     	    connection = pymongo.Connection()
-	    db = connection["User_" + pk]
-
+	    db = connection["User_" + str(pk)]
+	    logging.debug('connected to db')
 	    #log entry 	    
-      	    db_log = findOrCreate('log', db, emptyLog)
-	    db_log_entry
+      	    #db_log = findOrCreate('log', db, emptyLog)
 
 	    focus_count = 1
 	    focus_ave = 0
@@ -760,24 +1075,27 @@ def viz(request):
 
         # Get Averages
 	    sl = get_sharing_level(pk)
-	    if sl == 0:
+	    logging.debug(sl)
+	    if int(sl) == 0:
 		activity_string = ""
 		focus_string = ""
 		social_ave = 0
 		activity_ave = 0
 		focus_ave = 0
-	    elif sl == 1:
+	    elif int(sl) == 1:
 		social_score = 1	
 		focus_ave = 0
 		social_ave = 0
 		activity_ave = 0
-	    elif sl == 2:
+	    elif int(sl) == 2:
+	        logging.debug('stop 1')
 		averages = get_averages(connection,pk)
 		social_ave = 1 
 		activity_ave = averages['HA']
+	        logging.debug(averages['HA'])
 		focus_ave = averages['SC']
 		social_score = 1	
-	    elif sl == 3:
+	    elif int(sl) == 3:
 		averages = get_averages(connection,pk)
 		activity_ave = averages['HA']
 		focus_ave = averages['SC']
@@ -786,6 +1104,7 @@ def viz(request):
 
 
             #Calculate scores for Activity and Focus
+	    logging.debug(levels)
     	    if levels['activity']:
               activity_data = activity_string #_apiRequest('https://pds.media.mit.edu/api/activity/', data)
               activity_score = _scoreActivity(_strToList(activity_data))
@@ -827,7 +1146,8 @@ def viz(request):
 	activity_ave = activity_ave * 5
 
 	# verify groups
-	if groups['roles']['peers'] is False:
+	logging.debug('groups...')
+	if groups['roles']['Peers'] is False:
 	    focus_ave = 0
 	    activity_ave = 0
 	    social_ave = 0
@@ -895,7 +1215,8 @@ def get_averages(connection, pk):
           for row in ha_query_result:
 	    HA_num += row['HIGH_ACTIVITY_INTERVALS']
 	    HA_den += 1
-          
+          if HA_den == 0:
+	    HA_den = 1 
           #Get Screen 
 	  sc_query_result = db.funf_data.find({'PROBE':'edu.mit.media.funf.probe.builtin.ScreenProbe', 'TIMESTAMP': {'$gt': hours_ago}, 'SCREEN_ON': True}, {'SCREEN_ON':1})
 	  for row in sc_query_result:
@@ -906,9 +1227,11 @@ def get_averages(connection, pk):
         except Exception as ex:
 	   logging.debug(ex.args)
 
-
+    logging.debug(SC_den)
+    logging.debug(HA_den)
     sc_ave = (SC_num+ 0.0)/SC_den
     ha_ave = (HA_num+ 0.0)/HA_den
+    logging.debug('pre-get_averages query')
   #  sc_ave = sc_ave*5
    # ha_ave = ha_ave*5
     average = {"HA": ha_ave, "SC": sc_ave, "SO": 1} 
