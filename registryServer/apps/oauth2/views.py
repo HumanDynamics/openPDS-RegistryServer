@@ -21,7 +21,8 @@ def missing_redirect_uri(request):
 
 @login_required
 def authorize(request):
-    authorizer = Authorizer()
+    CODE_AND_TOKEN = 3
+    authorizer = Authorizer(response_type=CODE_AND_TOKEN)
     try:
         authorizer.validate(request)
     except MissingRedirectURI, e:
