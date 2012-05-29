@@ -15,8 +15,96 @@ import urllib2
 import httplib
 import logging
 from simplejson import dumps
+import pymongo 
+from pymongo import Connection
+from bson import json_util
+import json, ast
+
+
+
 
 upload_dir = '/data/temp'
+
+# to be called from a resource server.  This will read a mongo store of an app, and return the results all documents held in the app's mongo store.
+def initCollection(request):
+    import pydevd;pydevd.settrace('18.189.24.242',port=5678)
+    #scope = AccessRange.objects.get(key="reality_analysis")
+    #authenticator = JSONAuthenticator(scope=scope)
+    #pk = ""
+
+    #try:
+    #    authenticator.validate(request)
+    #    pk = str(authenticator.user.pk)
+    #except AuthenticationException:
+    #    logging.debug(authenticator.error_response())
+    #    return authenticator.error_response()
+
+    usr_id = ""
+    col_name = ""
+    result = list()
+    try:
+        connection = Connection()
+        db = connection['Applications']
+        if request.method == 'GET':
+            if request.GET.__contains__('user_id'):
+                usr_id = str(request.GET['user_id'])
+            else:
+                raise Exception('missing user_id from GET parameters')
+            if request.GET.__contains__('collection_name'):
+                col_name = str(request.GET['collection_name'])
+#                pds_url = pds_path+"?pk="+pk+"&scope=reality_analysis"
+            else:
+                raise Exception('missing collection_name from GET parameters')
+
+        result = read_mongo(db, str(col_name))
+    except Exception as e:
+        result = {'success':False, 'error_message':e.message}
+    finally:
+        connection.disconnect()
+        response_content = json.dumps(result, default=json_util.default)
+        response = HttpResponse(
+            content=response_content,
+            content_type='application/json')
+    	return response
+
+#def instantiateUser(user_id):
+
+
+
+#Mongo Interface Operations
+
+#Read all documents in a mongo database, for the specified collection, mask, and exclusions.
+#
+#Input Parameters
+#db - an open connection to a mongo database
+#collection - a string specifying the mongo collection to read from
+#mask - the query mask.  The query will return all documents that fit the mask, minus the parts eliminated by the exclude parameter
+#include - a {<"key">: boolean} list of objects, set to 1 if the key should be included, and 0 if included.
+#
+#Return Elements
+#on success - A python-list of python-dictionary items containing the query result.
+#on failure - A python-list of python dictionary items containing the failure information.
+def read_mongo(db, collection, mask=None,include=None):
+    response_list = list()
+    try:
+        if(collection == "funf_data"):
+            query_result = db.funf_data.find()
+        elif(collection == "reality_analysis_service"):
+            query_result = db.reality_analysis_service.find()
+        elif(collection == "personalPermissions"):
+            query_result = db.personalPermissions.find()
+        elif(collection == "logCollection"):
+            query_result = db.logCollection.find()
+        else:
+    	    raise Exception('message','collection specified is unknown to read_mongo')
+	
+	for(idx, result) in enumerate(query_result):
+	    response_list.append(result)
+
+    except:
+	raise Exception('unexpected error in read_mongo')
+    return response_list
+
 
 
 #entry point for Reality Analysis api

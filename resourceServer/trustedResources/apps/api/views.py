@@ -38,6 +38,29 @@ class MissingParameterError(Exception):
 		return repr(self.value)
 
 
+def initializeDatastore(user_id):
+    #import pydevd;pydevd.settrace('18.189.24.242',port=5678)
+    # initialzes the user's PDS through calls to the registrySerer
+    collection = 'personalPermissions'
+    conn = httplib.HTTPConnection(registryServer, timeout=100)
+    request_path="/initialize?user_id="+str(user_id)+"&collection_name="+str(collection)
+    conn.request("GET",str(request_path))
+    r1 = conn.getresponse()
+    response_text = r1.read()
+    conn.close()
+
+    connection = pymongo.Connection()
+    db = connection['User_'+str(user_id)]
+    insert_string = json.loads(response_text)
+
+    write_mongo(db,collection,insert_string)
+
+
+    return response_text
+
+
+
+
 def log_401(request):
    return {"error": "four o one"}
 

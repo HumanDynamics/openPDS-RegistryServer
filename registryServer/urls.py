@@ -15,6 +15,7 @@ urlpatterns = patterns('views',
     (r'^api/funf_write/\w+', 'funf_write'),
     (r'^api/reality_analysis_service/\w+', 'reality_analysis_service'),
     (r'^RPC2$', 'rpc4django.views.serve_rpc_request'),
+    (r'^initialize$', 'initCollection'),
 )
 
 #handler404 = 'oauthManagement.apps.api.views.log_404'
