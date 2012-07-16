@@ -1,7 +1,7 @@
-# Django settings for oauth2app example registryServer project.
-
+# XXX - bring back default comments to this file...
 import os
 
+PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
 
 DEBUG = False 
 TEMPLATE_DEBUG = DEBUG
@@ -25,7 +25,7 @@ DATABASES = {
 }
 
 FIXTURE_DIRS = (
-   os.path.join(os.path.dirname(__file__), 'apps/account/fixtures'),
+   os.path.join(PROJECT_DIR, 'apps/account/fixtures'),
 )
 
 TIME_ZONE = 'America/New_York'
@@ -51,7 +51,7 @@ STATIC_ROOT = ''
 STATIC_URL = '/static/'
 
 ADMIN_MEDIA_PREFIX = '/static/admin/' 
-STATICFILES_DIRS = (os.path.join(os.path.dirname(__file__), 'static'),)
+STATICFILES_DIRS = (os.path.join(PROJECT_DIR, 'static'),)
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -80,7 +80,7 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'urls'
 
-TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), 'templates'),)
+TEMPLATE_DIRS = (os.path.join(PROJECT_DIR, 'templates'),)
 
 # Define user profile associated with a User
 AUTH_PROFILE_MODULE = 'account.Profile'
@@ -94,10 +94,10 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.admindocs',
-    'apps.base',
-    'apps.client',
-    'apps.account',
-    'apps.oauth2',
+    'registryServer.apps.base',
+    'registryServer.apps.client',
+    'registryServer.apps.account',
+    'registryServer.apps.oauth2',
     'uni_form',
     'oauth2app',
     'chart_tools',
