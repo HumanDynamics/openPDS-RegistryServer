@@ -3,6 +3,10 @@ django
 pycrypto
 pymongo
 psycopg2
+django_extensions
+chart_tools
+uni_form
+rpc4django
 
 # oauth2app
 https://github.com/hiidef/oauth2app/tarball/master
