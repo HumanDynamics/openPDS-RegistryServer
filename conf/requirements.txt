@@ -3,9 +3,9 @@ django
 pycrypto
 pymongo
 psycopg2
-django_extensions
-chart_tools
-uni_form
+django-extensions
+django-chart-tools
+django-uni-form
 rpc4django
 
 # oauth2app
