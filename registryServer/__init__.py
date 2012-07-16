@@ -13,7 +13,7 @@ def validate(request):
         authenticator.validate(request)
         pk = str(authenticator.user.pk)
 	if request.GET.__contains__('datastore_owner'):
-   	    datastore_owner = id_to_sid(pk, request.GET.['datastore_owner'])
+   	    datastore_owner = id_to_sid(pk, request.GET['datastore_owner'])
 	else:
 	    datastore_owner = None
     except AuthenticationException:
