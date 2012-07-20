@@ -3,7 +3,7 @@
 # this must be set for the webapp deployment to complete correctly
 # update the /var/python path to something else you desire, if you wish to
 # customize this setting.
-export WORKON_HOME=/var/python
+export WORKON_HOME=/var/www/trustframework
 
 # let's run as root.
 sudo su -l
@@ -21,7 +21,7 @@ pip install fabric
 fab -H localhost prep_server
 
 # and then to deploy the project
-fab -H localhost deploy_project:id3-RegistryServer
+fab -H localhost deploy_project
 
 # XXX - don't actually trust this, I have to confirm the $1 bits in sh scripting
 # if you wish to have this script deploy multiple projects, use the following
