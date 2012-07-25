@@ -5,23 +5,24 @@
 # customize this setting.
 export WORKON_HOME=/var/www/trustframework
 
-# let's run as root.
-sudo su -l
+# gcc and the python header files are needed for dependencies with components we
+# must compile, like pycrypto and psycopg2
+sudo aptitude install gcc python-dev
 
 # by using setuptools/easy_install, we can obtain the most recent stable release
 # of pip
-aptitude install python-setuptools
-easy_install pip
+sudo aptitude install python-setuptools
+sudo easy_install pip
 
 # now use pip to install fabric
-pip install fabric
+sudo pip install fabric
 
 # use fabric to continue the install
 # first, by preparing the server 
-fab -H localhost prep_server
+sudo fab -H localhost prep_server
 
 # and then to deploy the project
-fab -H localhost deploy_project
+sudo fab -H localhost deploy_project
 
 # XXX - don't actually trust this, I have to confirm the $1 bits in sh scripting
 # if you wish to have this script deploy multiple projects, use the following

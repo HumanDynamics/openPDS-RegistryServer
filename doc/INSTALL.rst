@@ -17,7 +17,7 @@ requirements / expectations
 * upload a copy of the git repository to the server
 * a user with access to root priviledges via sudo 
 * a ubuntu 12.04 LTS server
-* apache, mongodb, and mysql setup and running
+* openssh, apache, mongodb, and mysql setup and running
 
 
 steps to install the registry server
