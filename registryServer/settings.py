@@ -15,11 +15,11 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         # supported db backends are 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'
-        #'ENGINE': 'django.db.backends.mysql', 
-        'ENGINE': 'django.db.backends.sqlite3', 
-        'NAME': 'trust',      
-        'USER': 'trust',      
-        'PASSWORD': 'trust',  
+        'ENGINE': 'django.db.backends.mysql', 
+       # 'ENGINE': 'django.db.backends.sqlite3', 
+        'NAME': 'test',      
+        'USER': 'test',      
+        'PASSWORD': 'test',  
         'HOST': '',      
         'PORT': '',      
 	'OPTIONS': {
@@ -128,9 +128,9 @@ MIDDLEWARE_CLASSES = (
 )
 
 # Python dotted path to the WSGI application used by Django's runserver.
-WSGI_APPLICATION = 'registryServer.wsgi.application'
+#WSGI_APPLICATION = 'registryServer.wsgi.application'
 
-ROOT_URLCONF = 'registryServer.urls'
+ROOT_URLCONF = 'urls'
 
 # Define user profile associated with a User
 AUTH_PROFILE_MODULE = 'account.Profile'
@@ -150,10 +150,10 @@ INSTALLED_APPS = (
     'apps.oauth2',
     'uni_form',
     'oauth2app',
-    'chart_tools',
     'django_extensions',
-    'rpc4django',)
+    )
 
+#    'regisryServer.apps.oauth2',
 # XXX - look up to confirm this is correct
 # TTL for an OAUTH2 access token, in seconds (presumably)
 OAUTH2_ACCESS_TOKEN_EXPIRATION = 36000000

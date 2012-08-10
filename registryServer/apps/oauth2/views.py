@@ -8,7 +8,7 @@ from uni_form.helpers import FormHelper, Submit, Reset
 from django.contrib.auth.decorators import login_required
 from oauth2app.authorize import Authorizer, MissingRedirectURI, AuthorizationException
 from oauth2app.authorize import UnvalidatedRequest, UnauthenticatedUser
-from .forms import AuthorizeForm
+from apps.oauth2.forms import AuthorizeForm
 
 
 @login_required

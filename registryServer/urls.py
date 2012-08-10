@@ -14,13 +14,12 @@ urlpatterns = patterns('views',
     (r'^api/reality_analysis/\w+', 'reality_analysis'),
     (r'^api/funf_write/\w+', 'funf_write'),
     (r'^api/reality_analysis_service/\w+', 'reality_analysis_service'),
-    (r'^RPC2$', 'rpc4django.views.serve_rpc_request'),
     (r'^initialize$', 'initCollection'),
 )
 
-#handler404 = 'oauthManagement.apps.api.views.log_404'
-#handler403 = 'oauthManagement.apps.api.views.log_403'
-#handler500 = 'oauthManagement.apps.api.views.log_500'
-#handler401 = 'oauthManagement.apps.api.views.log_401'
-    #(r'^api/', include('registryServer.apps.api.urls')),
+#handler404 = 'oauthManagement.regisryServer.apps.api.views.log_404'
+#handler403 = 'oauthManagement.regisryServer.apps.api.views.log_403'
+#handler500 = 'oauthManagement.regisryServer.apps.api.views.log_500'
+#handler401 = 'oauthManagement.regisryServer.apps.api.views.log_401'
+    #(r'^api/', include('registryServer.regisryServer.apps.api.urls')),
 
