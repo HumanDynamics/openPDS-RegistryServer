@@ -15,3 +15,10 @@ class UserResource(ModelResource):
         queryset = User.objects.all()
 	excludes = ['id', 'password', 'date_joined', 'is_superuser', 'is_active', 'is_staff']
         resource_name = 'user'
+
+    def dehydrate(self, bundle):
+        # An example of a derived field.
+        if bundle.obj.is_staff == bundle.obj.is_active:
+            bundle.data['IDC_ADMIN'] = True
+
+        return bundle

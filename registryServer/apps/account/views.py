@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 
 from forms import *
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.contrib import auth
@@ -12,6 +12,7 @@ from oauth2app.models import Client, AccessRange
 from django.contrib.admin.views.decorators import staff_member_required
 #from registryServer.datastoreUtils import *
 import pymongo
+import json
 
 @login_required
 def clients(request):
@@ -200,3 +201,23 @@ def adminToolbar(request):
           'profileform': profileform,
         },
         RequestContext(request))
+
+
+def authenticate(request):
+    response_data = {}
+    try:
+        qdict = request.POST
+        user = auth.authenticate(
+            username=qdict['x'],
+            password=qdict['y'])
+        response_data['username']=str(user)
+        if user is not None:
+            response_data['status']="success"
+        else:
+            response_data['status']="error"
+    	    response_data['message']="Invalid username or password"
+    except:
+        response_data['status']="error"
+        response_data['message']="Malformed request.  Ensure your are posting x and y parameters"
+    return HttpResponse(json.dumps(response_data), mimetype="application/json")
+
