@@ -1,4 +1,5 @@
 from tastypie.resources import ModelResource
+from tastypie import fields, utils
 from apps.account.models import Profile
 from django.contrib.auth.models import User
 
@@ -9,6 +10,8 @@ from django.contrib.auth.models import User
 #        resource_name = 'profile'
 
 class UserResource(ModelResource):
+    IDC_ADMIN = fields.BooleanField(default=False)    
     class Meta:
         queryset = User.objects.all()
+	excludes = ['id', 'password', 'date_joined', 'is_superuser', 'is_active', 'is_staff']
         resource_name = 'user'
