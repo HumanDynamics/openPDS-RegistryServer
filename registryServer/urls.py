@@ -1,8 +1,10 @@
 from django.conf.urls.defaults import patterns, include, url
 from django.conf import settings
-
+from apps.account.api import UserResource
 from django.contrib import admin
 admin.autodiscover()
+
+user_resource = UserResource()
 
 urlpatterns = patterns('views',
     (r'^', include('apps.base.urls')),
@@ -15,6 +17,7 @@ urlpatterns = patterns('views',
     (r'^api/funf_write/\w+', 'funf_write'),
     (r'^api/reality_analysis_service/\w+', 'reality_analysis_service'),
     (r'^initialize$', 'initCollection'),
+    (r'^oidc/', include(user_resource.urls)),
 )
 
 #handler404 = 'oauthManagement.regisryServer.apps.api.views.log_404'

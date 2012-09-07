@@ -13,7 +13,7 @@ from django.http import HttpResponse
 import urllib2
 import httplib
 import logging
-from simplejson import dumps
+#from simplejson import dumps
 import pymongo 
 from pymongo import Connection
 from bson import json_util
@@ -176,7 +176,7 @@ def reality_analysis(request):
 		
     except error:
 	data = {'error': 'PDS request failed'}
-	json_data = dumps(data)
+	json_data = json.dumps(data)
 	return HttpResponse(content=json_data,
 			content_type='application/json')
 
@@ -257,7 +257,7 @@ def funf_write(request):
 		
     except error:
 	data = {'error': 'PDS request failed'}
-	json_data = dumps(data)
+	json_data = json.dumps(data)
 	return HttpResponse(content=json_data,
 			content_type='application/json')
 
@@ -345,7 +345,7 @@ def reality_analysis_service(request):
 
     except error:
 	data = {'error': 'PDS request failed'}
-	json_data = dumps(data)
+	json_data = json.dumps(data)
 	return HttpResponse(content=json_data,
 			content_type='application/json')
 
