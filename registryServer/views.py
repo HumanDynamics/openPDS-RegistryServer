@@ -18,15 +18,15 @@ import pymongo
 from pymongo import Connection
 from bson import json_util
 import json, ast
+import settings
 
 
 
-
-upload_dir = '/data/temp'
+upload_dir = setting.SERVER_DATA_UPLOAD_DIRECTORY
 
 # to be called from a resource server.  This will read a mongo store of an app, and return the results all documents held in the app's mongo store.
 def initCollection(request):
-    import pydevd;pydevd.settrace('18.189.24.242',port=5678)
+    #import pydevd;pydevd.settrace('18.189.24.242',port=5678)
     #scope = AccessRange.objects.get(key="reality_analysis")
     #authenticator = JSONAuthenticator(scope=scope)
     #pk = ""

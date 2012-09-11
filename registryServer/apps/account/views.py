@@ -203,20 +203,40 @@ def adminToolbar(request):
         RequestContext(request))
 
 
-def authenticate(request):
+def json_auth(request):
     response_data = {}
     try:
         qdict = request.POST
         user = auth.authenticate(
             username=qdict['x'],
             password=qdict['y'])
+        accessranges = AccessRange.objects.all()
+        
         response_data['username']=str(user)
         if user is not None:
             response_data['status']="success"
+            scope_list = list()
+            for accessrange in accessranges:
+	        scope = {}
+                scope['key'] = accessrange.key
+                scope['description'] = accessrange.description
+                scope_list.append(scope)
+            response_data['scope']=scope_list
+            role_list = list()
+            if(user.is_staff):
+                role_list.append("staff")
+            if(user.is_active):
+                role_list.append("active")
+            if(user.is_superuser):
+                role_list.append("superuser")
+            response_data['role']=role_list
+            response_data['implicit_scope']=True
+
         else:
             response_data['status']="error"
     	    response_data['message']="Invalid username or password"
-    except:
+    except Exception as e:
+	print e
         response_data['status']="error"
         response_data['message']="Malformed request.  Ensure your are posting x and y parameters"
     return HttpResponse(json.dumps(response_data), mimetype="application/json")

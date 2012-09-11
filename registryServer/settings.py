@@ -158,6 +158,9 @@ INSTALLED_APPS = (
 # TTL for an OAUTH2 access token, in seconds (presumably)
 OAUTH2_ACCESS_TOKEN_EXPIRATION = 36000000
 
+#Server configurations
+SERVER_DATA_UPLOAD_DIRECTORY = '/data/temp'
+
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error when DEBUG=False.
