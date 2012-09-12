@@ -22,7 +22,7 @@ import settings
 
 
 
-upload_dir = setting.SERVER_DATA_UPLOAD_DIRECTORY
+upload_dir = settings.SERVER_DATA_UPLOAD_DIRECTORY
 
 # to be called from a resource server.  This will read a mongo store of an app, and return the results all documents held in the app's mongo store.
 def initCollection(request):
