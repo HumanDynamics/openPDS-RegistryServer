@@ -9,7 +9,7 @@ urlpatterns = patterns('apps.account.views',
     (r'^remove_role/([1234567890]+)/([1234567890]+)/(.*)$',             'removeRole'),
     (r'^admin_toolbar/?$',            'adminToolbar'),
     (r'^admin_panel/?$',            'adminToolbar'),
-    (r'^json_auth$',	'json_auth'),
+#    (r'^json_auth$',	'json_auth'),
 )
 urlpatterns += patterns('',
   (r'^login/?$',                  'django.contrib.auth.views.login', {'template_name': 'account/login.html'}),

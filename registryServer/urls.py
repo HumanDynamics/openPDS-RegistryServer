@@ -13,11 +13,11 @@ urlpatterns = patterns('views',
     (r'^oauth2/', include('apps.oauth2.urls')),
     (r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^admin/', include(admin.site.urls)),
-    (r'^api/reality_analysis/\w+', 'reality_analysis'),
-    (r'^api/funf_write/\w+', 'funf_write'),
-    (r'^api/reality_analysis_service/\w+', 'reality_analysis_service'),
-    (r'^initialize$', 'initCollection'),
-    (r'^oidc/', include(user_resource.urls)),
+    (r'^get_key_from_token$', 'get_key_from_token'),
+    (r'^get_user_list$', 'get_user_list'),
+    (r'^get_sid_from_id$', 'get_sid_from_id'),
+    (r'^get_id_from_sid$', 'get_id_from_sid'),
+    (r'^oic/', include(user_resource.urls)),
 )
 
 #handler404 = 'oauthManagement.regisryServer.apps.api.views.log_404'

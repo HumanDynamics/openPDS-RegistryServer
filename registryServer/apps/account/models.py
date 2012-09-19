@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 class Profile(models.Model):
   user = models.ForeignKey(User, unique=True)
   group = models.ForeignKey('Group', blank=True, null=True)
+  pds_location = models.URLField(max_length=100)
   def __unicode__(self):
     return self.user.username
   

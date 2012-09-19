@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from oauth2app.models import Client, AccessRange
 #from .forms import *
 from django.contrib.admin.views.decorators import staff_member_required
-#from registryServer.datastoreUtils import *
+from datastoreUtils import *
 import pymongo
 import json
 
@@ -114,6 +114,9 @@ def roleUsers(request, hostUserID):
                         roles[role] = False
                     if not uidRoles.__contains__(u2uPk):
                         uidRoles[u2uPk] = []
+		    #TODO needs to be created in user's pds
+		    pds_location = profile.pds_location
+
                     uidRoles[u2uPk].append(role)
                     uidRoles[u2uPk] = list(set(uidRoles[u2uPk]))
                     db.personalPermissions.save(pp)
@@ -145,6 +148,25 @@ def roleUsers(request, hostUserID):
         }, 
         RequestContext(request))
 
+
+def addRoleToPDS(pds_location, sid, key):
+
+    try:
+        # get pds location and user id
+        request_path=str(pds_location)+"api/roles/role/?format=json&token=e3912e17bc&scope=funf_write"
+	pds_json = {'key':key,'ids':sid}
+        data = json.dumps(pds_json)
+        req = urllib2.Request(request_path, data, {'Content-Type': 'application/json'})
+        f = urllib2.urlopen(req)
+        response = f.read()
+        f.close()
+
+    except Exception as ex:
+        logging.debug(ex.args)
+        return None
+    return response
+
+
 @login_required
 @staff_member_required
 def removeRole(request, hostPk, guestPk, role):
@@ -169,6 +191,7 @@ def removeRole(request, hostPk, guestPk, role):
 def adminToolbar(request):
     saved = False
     uid = None
+    user = None
     profileform = ProfileForm()
     if request.method == 'GET' and request.GET.__contains__('uid'):
         try:
@@ -211,33 +234,37 @@ def json_auth(request):
             username=qdict['x'],
             password=qdict['y'])
         accessranges = AccessRange.objects.all()
-        
+
         response_data['username']=str(user)
         if user is not None:
             response_data['status']="success"
             scope_list = list()
             for accessrange in accessranges:
-	        scope = {}
+                scope = {}
                 scope['key'] = accessrange.key
                 scope['description'] = accessrange.description
                 scope_list.append(scope)
             response_data['scope']=scope_list
             role_list = list()
-            if(user.is_staff):
-                role_list.append("staff")
-            if(user.is_active):
-                role_list.append("active")
-            if(user.is_superuser):
-                role_list.append("superuser")
-            response_data['role']=role_list
-            response_data['implicit_scope']=True
+            if(user.is_staff and user.is_active):
+                response_data['IDC_ADMIN']=True
+            else:
+                response_data['IDC_ADMIN']=False
+            #    role_list.append("staff")
+            #if(user.is_active):
+            #    role_list.append("active")
+            #if(user.is_superuser):
+            #    role_list.append("superuser")
+            #response_data['role']=role_list
+            response_data['implicit_scope']=False
 
         else:
             response_data['status']="error"
-    	    response_data['message']="Invalid username or password"
+            response_data['message']="Invalid username or password"
     except Exception as e:
-	print e
+        print e
         response_data['status']="error"
         response_data['message']="Malformed request.  Ensure your are posting x and y parameters"
     return HttpResponse(json.dumps(response_data), mimetype="application/json")
+
 

@@ -3,7 +3,7 @@ import os
 
 PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
 
-DEBUG = False 
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -139,7 +139,6 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
@@ -157,9 +156,6 @@ INSTALLED_APPS = (
 # XXX - look up to confirm this is correct
 # TTL for an OAUTH2 access token, in seconds (presumably)
 OAUTH2_ACCESS_TOKEN_EXPIRATION = 36000000
-
-#Server configurations
-SERVER_DATA_UPLOAD_DIRECTORY = '/data/temp'
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
