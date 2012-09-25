@@ -72,9 +72,9 @@ def get_user_list(request):
         content_type='application/json')
     return response
 
-def get_sid_from_id(request):
-    response_data = {}
-    try:
+#def get_sid_from_id(request):
+#    response_data = {}
+#    try:
         
 
 

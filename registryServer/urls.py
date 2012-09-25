@@ -15,8 +15,8 @@ urlpatterns = patterns('views',
     (r'^admin/', include(admin.site.urls)),
     (r'^get_key_from_token$', 'get_key_from_token'),
     (r'^get_user_list$', 'get_user_list'),
-    (r'^get_sid_from_id$', 'get_sid_from_id'),
-    (r'^get_id_from_sid$', 'get_id_from_sid'),
+#    (r'^get_sid_from_id$', 'get_sid_from_id'),
+#    (r'^get_id_from_sid$', 'get_id_from_sid'),
     (r'^oic/', include(user_resource.urls)),
 )
 
