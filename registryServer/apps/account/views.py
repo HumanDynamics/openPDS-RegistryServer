@@ -94,9 +94,9 @@ def roleUsers(request, hostUserID):
     roleToProfiles = []
     roles = {}
     try:
-        (connection, db) = connectToMongoDB(str(hostUser.pk))
+#        (connection, db) = connectToMongoDB(str(hostUser.pk))
         # get current PersonalPermissions
-        pp = findOrCreate('personalPermissions', db, emptyPersonalPermissions)
+#        pp = findOrCreate('personalPermissions', db, emptyPersonalPermissions)
 
         # process Form
         if request.method == 'POST':
@@ -106,26 +106,28 @@ def roleUsers(request, hostUserID):
                 userGuestID = roleToProfileForm.cleaned_data['uid']
                 try:
                     userGuest = User.objects.get(id=userGuestID)
-                    u2u, isNew = UserToUser.objects.get_or_create(profileHost=profile, profileGuest=getProfile(userGuest))
+                    u2u, isNew = UserToUser.objects.get_or_create(profileHost=profile, profileGuest=getProfile(userGuest),role=str(role))
                     u2uPk = str(u2u.pk)
-                    roles = pp['roles']
-                    uidRoles = pp['uidRoles']
-                    if not roles.__contains__(role):
-                        roles[role] = False
-                    if not uidRoles.__contains__(u2uPk):
-                        uidRoles[u2uPk] = []
-		    #TODO needs to be created in user's pds
-		    pds_location = profile.pds_location
-
-                    uidRoles[u2uPk].append(role)
-                    uidRoles[u2uPk] = list(set(uidRoles[u2uPk]))
-                    db.personalPermissions.save(pp)
+#                    roles = pp['roles']
+#                    uidRoles = pp['uidRoles']
+#                    if not roles.__contains__(role):
+#                        roles[role] = False
+#                    if not uidRoles.__contains__(u2uPk):
+#                        uidRoles[u2uPk] = []
+#		    #TODO needs to be created in user's pds
+#		    pds_location = profile.pds_location
+#
+#                    uidRoles[u2uPk].append(role)
+#                    uidRoles[u2uPk] = list(set(uidRoles[u2uPk]))
+#                    db.personalPermissions.save(pp)
                 except:
                     pass #TODO return FormValidation error - User with uid does not exist
         
         # get current Roles
-        roles = pp['roles']
-        uidRoles = pp['uidRoles']
+#        roles = pp['roles']
+#        uidRoles = pp['uidRoles']
+	uidRoles = {}
+	roles = {}
         
         for uid, value in uidRoles.items():
             try:
@@ -136,7 +138,8 @@ def roleUsers(request, hostUserID):
             
         
     finally:
-        connection.disconnect()
+        #connection.disconnect()
+	print "end"
     
     return render_to_response(
         'account/groupUsers.html', 

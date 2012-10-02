@@ -1,5 +1,5 @@
 #-*- coding: utf-8 -*-
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 import urllib
 import urllib2
@@ -8,7 +8,7 @@ import datetime
 
 from oauth2app.authenticate import JSONAuthenticator, AuthenticationException
 from oauth2app.models import AccessRange
-#from account.models import *
+from apps.account.models import UserToUser
 from django.http import HttpResponse
 import urllib2
 import httplib
@@ -21,6 +21,7 @@ import json, ast
 import settings
 
 
+
 def get_key_from_token(request):
     response_content = {}
 
@@ -28,9 +29,19 @@ def get_key_from_token(request):
         scope = AccessRange.objects.get(key=str(request.GET['scope']))
         authenticator = JSONAuthenticator(scope=scope)
         authenticator.validate(request)
+	if request.GET.get('hostid'):
+	    u2u = get_object_or_404(UserToUser,id=request.GET['hostid'])
+	    #a request from a peer
+	    role_list = []
+	    role_list.append(u2u.role)
+	    response_content['roles'] = role_list
+	    response_content['request_type'] = "peer"
+	else:
+	    response_content['request_type'] = "self"
+	    #a request from self (host=guest)
         response_content['key']=str(authenticator.user.pk)
-	response_content['pds_location']=authenticator.user.get_profile().pds_location
-	response_content['status']="success"
+        response_content['pds_location']=authenticator.user.get_profile().pds_location
+        response_content['status']="success"
     except Exception as e:
         response_content['status']="error"
         response_content['message']="failed to get key from token"

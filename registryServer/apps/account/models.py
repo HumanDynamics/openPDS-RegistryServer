@@ -22,5 +22,6 @@ class Group(models.Model):
 class UserToUser(models.Model):
   profileGuest = models.ForeignKey(Profile, related_name='guest')
   profileHost = models.ForeignKey(Profile, related_name='host')
+  role = models.CharField(max_length=100)
   class Meta:
-    unique_together = (("profileGuest", "profileHost"))
+    unique_together = (("profileGuest", "profileHost", "role"))
