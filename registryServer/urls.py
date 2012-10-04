@@ -18,6 +18,7 @@ urlpatterns = patterns('views',
 #    (r'^get_sid_from_id$', 'get_sid_from_id'),
 #    (r'^get_id_from_sid$', 'get_id_from_sid'),
     (r'^oic/', include(user_resource.urls)),
+    (r'^get_system_entity_connection$', 'get_system_entity_connection'),
 )
 
 #handler404 = 'oauthManagement.regisryServer.apps.api.views.log_404'

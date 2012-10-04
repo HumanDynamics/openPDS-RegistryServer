@@ -6,9 +6,9 @@ import urllib2
 import hashlib
 import datetime
 
-from oauth2app.authenticate import JSONAuthenticator, AuthenticationException
+from oauth2app.authenticate import JSONAuthenticator, AuthenticationException, Authenticator, InsufficientScope
 from oauth2app.models import AccessRange
-from apps.account.models import UserToUser
+from apps.account.models import UserToUser, User
 from django.http import HttpResponse
 import urllib2
 import httplib
@@ -19,8 +19,6 @@ from pymongo import Connection
 from bson import json_util
 import json, ast
 import settings
-
-
 
 def get_key_from_token(request):
     response_content = {}
@@ -48,6 +46,29 @@ def get_key_from_token(request):
 	print e
 
     return HttpResponse(json.dumps(response_content), mimetype="application/json")
+
+
+def get_system_entity_connection(request):
+    response_content = {}
+
+    try:
+        scope = AccessRange.objects.get(key="system_entity")
+        authenticator = Authenticator(scope=scope)
+	authenticator.validate(request)
+	if scope not in authenticator.scope:
+	    raise Exception("Access token is insufficient to get a system entity connection")
+	pdslocationlist = list()
+	for user in User.objects.all():
+	    pdslocationlist.append(user.get_profile().pds_location)	
+        response_content['pds_locations']=pdslocationlist
+        response_content['status']="success"
+    except Exception as e:
+        response_content['status']="error"
+        response_content['message']="failed to connect as system entity"
+	logging.debug(e)
+
+    return HttpResponse(json.dumps(response_content), mimetype="application/json")
+
 
 def scope_info(request):
     response_data = {}
