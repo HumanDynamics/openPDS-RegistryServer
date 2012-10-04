@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 
 from forms import *
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.contrib import auth
@@ -10,8 +10,9 @@ from django.contrib.auth.models import User
 from oauth2app.models import Client, AccessRange
 #from .forms import *
 from django.contrib.admin.views.decorators import staff_member_required
-#from registryServer.datastoreUtils import *
+from datastoreUtils import *
 import pymongo
+import json
 
 @login_required
 def clients(request):
@@ -93,9 +94,9 @@ def roleUsers(request, hostUserID):
     roleToProfiles = []
     roles = {}
     try:
-        (connection, db) = connectToMongoDB(str(hostUser.pk))
+#        (connection, db) = connectToMongoDB(str(hostUser.pk))
         # get current PersonalPermissions
-        pp = findOrCreate('personalPermissions', db, emptyPersonalPermissions)
+#        pp = findOrCreate('personalPermissions', db, emptyPersonalPermissions)
 
         # process Form
         if request.method == 'POST':
@@ -105,23 +106,28 @@ def roleUsers(request, hostUserID):
                 userGuestID = roleToProfileForm.cleaned_data['uid']
                 try:
                     userGuest = User.objects.get(id=userGuestID)
-                    u2u, isNew = UserToUser.objects.get_or_create(profileHost=profile, profileGuest=getProfile(userGuest))
+                    u2u, isNew = UserToUser.objects.get_or_create(profileHost=profile, profileGuest=getProfile(userGuest),role=str(role))
                     u2uPk = str(u2u.pk)
-                    roles = pp['roles']
-                    uidRoles = pp['uidRoles']
-                    if not roles.__contains__(role):
-                        roles[role] = False
-                    if not uidRoles.__contains__(u2uPk):
-                        uidRoles[u2uPk] = []
-                    uidRoles[u2uPk].append(role)
-                    uidRoles[u2uPk] = list(set(uidRoles[u2uPk]))
-                    db.personalPermissions.save(pp)
+#                    roles = pp['roles']
+#                    uidRoles = pp['uidRoles']
+#                    if not roles.__contains__(role):
+#                        roles[role] = False
+#                    if not uidRoles.__contains__(u2uPk):
+#                        uidRoles[u2uPk] = []
+#		    #TODO needs to be created in user's pds
+#		    pds_location = profile.pds_location
+#
+#                    uidRoles[u2uPk].append(role)
+#                    uidRoles[u2uPk] = list(set(uidRoles[u2uPk]))
+#                    db.personalPermissions.save(pp)
                 except:
                     pass #TODO return FormValidation error - User with uid does not exist
         
         # get current Roles
-        roles = pp['roles']
-        uidRoles = pp['uidRoles']
+#        roles = pp['roles']
+#        uidRoles = pp['uidRoles']
+	uidRoles = {}
+	roles = {}
         
         for uid, value in uidRoles.items():
             try:
@@ -132,7 +138,8 @@ def roleUsers(request, hostUserID):
             
         
     finally:
-        connection.disconnect()
+        #connection.disconnect()
+	print "end"
     
     return render_to_response(
         'account/groupUsers.html', 
@@ -143,6 +150,25 @@ def roleUsers(request, hostUserID):
           'host': hostUser,
         }, 
         RequestContext(request))
+
+
+def addRoleToPDS(pds_location, sid, key):
+
+    try:
+        # get pds location and user id
+        request_path=str(pds_location)+"api/roles/role/?format=json&token=e3912e17bc&scope=funf_write"
+	pds_json = {'key':key,'ids':sid}
+        data = json.dumps(pds_json)
+        req = urllib2.Request(request_path, data, {'Content-Type': 'application/json'})
+        f = urllib2.urlopen(req)
+        response = f.read()
+        f.close()
+
+    except Exception as ex:
+        logging.debug(ex.args)
+        return None
+    return response
+
 
 @login_required
 @staff_member_required
@@ -168,6 +194,7 @@ def removeRole(request, hostPk, guestPk, role):
 def adminToolbar(request):
     saved = False
     uid = None
+    user = None
     profileform = ProfileForm()
     if request.method == 'GET' and request.GET.__contains__('uid'):
         try:
@@ -200,3 +227,47 @@ def adminToolbar(request):
           'profileform': profileform,
         },
         RequestContext(request))
+
+
+def json_auth(request):
+    response_data = {}
+    try:
+        qdict = request.POST
+        user = auth.authenticate(
+            username=qdict['x'],
+            password=qdict['y'])
+        accessranges = AccessRange.objects.all()
+
+        response_data['username']=str(user)
+        if user is not None:
+            response_data['status']="success"
+            scope_list = list()
+            for accessrange in accessranges:
+                scope = {}
+                scope['key'] = accessrange.key
+                scope['description'] = accessrange.description
+                scope_list.append(scope)
+            response_data['scope']=scope_list
+            role_list = list()
+            if(user.is_staff and user.is_active):
+                response_data['IDC_ADMIN']=True
+            else:
+                response_data['IDC_ADMIN']=False
+            #    role_list.append("staff")
+            #if(user.is_active):
+            #    role_list.append("active")
+            #if(user.is_superuser):
+            #    role_list.append("superuser")
+            #response_data['role']=role_list
+            response_data['implicit_scope']=False
+
+        else:
+            response_data['status']="error"
+            response_data['message']="Invalid username or password"
+    except Exception as e:
+        print e
+        response_data['status']="error"
+        response_data['message']="Malformed request.  Ensure your are posting x and y parameters"
+    return HttpResponse(json.dumps(response_data), mimetype="application/json")
+
+
