@@ -32,3 +32,8 @@ We need some good docs in here detailing:
     >python manage.py runserver 0.0.0.0:8000 (for access to local VM)
     
 * links to important pages / wiki / etc
+* 
+* admin/
+* accessrange, client, accesstoken, users, profiles
+* *** document the importance of setting up pds_location
+* 
