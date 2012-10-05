@@ -7,7 +7,7 @@ We need some good docs in here detailing:
  
     The Registry Server is a trustframework registry (includes users, roles etc..) and is also an OAuth 2.0 registry.
 
-* how do you get started / install / run it
+* how do you get started / installing in virtual environment and running locally
 
     >apt-get install python pip
     
