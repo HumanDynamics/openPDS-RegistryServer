@@ -9,7 +9,7 @@ We need some good docs in here detailing:
 
 * how do you get started / installing in virtual environment and running locally
 
-    >apt-get install python pip
+    >apt-get install python-pip
     
     >apt-get install python-virtualenv
 
@@ -26,6 +26,8 @@ We need some good docs in here detailing:
     >pip install -r conf/requirements.txt
 
     >cd registryServer
+    
+    >python manage.py syncdb
     
     >python manage.py runserver 0.0.0.0:8000 (for access to local VM)
     
