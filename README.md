@@ -9,6 +9,8 @@ We need some good docs in here detailing:
 
 * how do you get started / installing in virtual environment and running locally
 
+    >sudo -i
+
     >apt-get install python-pip
     
     >apt-get install python-virtualenv
