@@ -15,16 +15,16 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         # supported db backends are 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'
-        #'ENGINE': 'django.db.backends.mysql', 
-        'ENGINE': 'django.db.backends.sqlite3', 
+        'ENGINE': 'django.db.backends.mysql', 
+        #'ENGINE': 'django.db.backends.sqlite3', 
         'NAME': 'test',      
         'USER': 'test',      
         'PASSWORD': 'test',  
         'HOST': '',      
         'PORT': '',      
-#	'OPTIONS': {
-#		'read_default_file': '/etc/mysql/my.cnf',
-#		},
+	'OPTIONS': {
+		'read_default_file': '/etc/mysql/my.cnf',
+		},
     }
 }
 
