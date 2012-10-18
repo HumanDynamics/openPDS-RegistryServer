@@ -20,6 +20,11 @@ from bson import json_util
 import json, ast
 import settings
 
+
+def isup(request):
+    response = {"success":True}
+    return HttpResponse(json.dumps(response), mimetype="application/json")
+
 def get_key_from_token(request):
     response_content = {}
 
