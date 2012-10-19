@@ -25,6 +25,10 @@ def isup(request):
     response = {"success":True}
     return HttpResponse(json.dumps(response), mimetype="application/json")
 
+def js(request):
+    response = {"success":True}
+    return render_to_response('javascript/test.js' )
+
 def get_key_from_token(request):
     response_content = {}
 

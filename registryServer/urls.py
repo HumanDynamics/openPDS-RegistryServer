@@ -9,6 +9,7 @@ user_resource = UserResource()
 urlpatterns = patterns('views',
     (r'^', include('apps.base.urls')),
     (r'^isup$', 'isup'),
+    (r'^js$', 'js'),
     (r'^account/', include('apps.account.urls')),
     (r'^client/', include('apps.client.urls')),
     (r'^oauth2/', include('apps.oauth2.urls')),
