@@ -1,0 +1,71 @@
+<div>
+Username
+<input 
+	type="textbox" 
+	profileFieldName="user.username" 
+	value="{{ user.username }}" 
+	class="profileAttribute" 
+	id="usernameTextbox{{id}}" />
+</div>
+<div>
+Password
+<input 
+	type="password" 
+	profileFieldName="user.password" 
+	class="profileAttribute" />
+</div>
+<div>
+Email
+<input 
+	type="textbox"
+	class="profileAttribute"
+	profileFieldName="user.email"
+	value="{{ user.email }}" />
+</div>
+<div>
+First name 
+<input 
+	type="textbox" 
+	class="profileAttribute" 
+	profileFieldName="user.first_name" 
+	value="{{ user.first_name }}" />
+</div>
+<div>
+Last name
+<input 
+	type="textbox"
+	class="profileAttribute" 
+	profileFieldName="user.last_name" 
+	value="{{ user.last_name }}" />
+</div>
+<div>
+Staff member?
+<input 
+	type="checkbox"
+	class="profileAttribute"
+	profileFieldName="user.is_staff"
+	{{#user}} {{#is_staff}}checked{{/is_staff}} {{/user}} />
+</div>
+<div>
+Superuser?
+<input 
+	type="checkbox"
+	class="profileAttribute"
+	profileFieldName="user.is_superuser"
+	{{#user}} {{#is_superuser}}checked{{/is_superuser}} {{/user}} />
+</div>
+<div>
+PDS Location
+<input 
+	type="textbox"
+	class="profileAttribute"
+	profileFieldName="pds_location"
+	value="{{ pds_location }}" />
+</div>
+<div>
+<input
+	type="button"
+	class="saveProfileButton"
+	value="save" />
+</div>
+<div></div>

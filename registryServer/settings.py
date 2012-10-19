@@ -150,6 +150,7 @@ INSTALLED_APPS = (
     'uni_form',
     'oauth2app',
     'django_extensions',
+    'lib',
     )
 
 #    'regisryServer.apps.oauth2',

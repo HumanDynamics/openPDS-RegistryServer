@@ -1,0 +1,33 @@
+{% extends "backboneLayout.html" %}
+{% load straight_include %}
+
+{% block more_scripts %}
+	<script>
+		PROFILE_API_URL = "{% url api_dispatch_list api_name="v1" resource_name="profile" %}";
+	</script>
+	
+	<script type="text/html" id="profileTemplate">
+		{% straight_include "account/profileTemplate.mustache" %}
+        </script>
+	
+	<script type="text/html" id="profileThumbTemplate">
+		{% straight_include "account/profileThumbTemplate.mustache" %}
+	</script>
+
+	<script src="/static/js/profile.js"></script>
+        <link rel="stylesheet" type="text/css" href="/static/css/profiles.css">
+{% endblock %}
+
+{% block content %}
+
+<form>
+<h2>Create a new profile</h2>
+<div id='profile' class="profileContainer">
+</div>
+<h2>Existing Profiles</h2>
+<ul id='profileList' class="profileContainer">
+</ul>
+</form>
+
+{% endblock %}
+

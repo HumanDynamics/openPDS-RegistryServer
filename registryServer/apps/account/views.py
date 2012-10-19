@@ -45,6 +45,11 @@ def logout(request):
         {}, 
         RequestContext(request))
 
+def profiles(request): 
+    return render_to_response(
+        'account/profiles.html',
+        {},
+        RequestContext(request))
 
 def signup(request):
     if request.method == "POST":
