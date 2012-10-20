@@ -17,7 +17,7 @@ DATABASES = {
         # supported db backends are 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'
         #'ENGINE': 'django.db.backends.mysql', 
         'ENGINE': 'django.db.backends.sqlite3', 
-        'NAME': 'test',      
+        'NAME': '/var/www/trustframework/test.db',      
         'USER': 'test',      
         'PASSWORD': 'test',  
         'HOST': '',      

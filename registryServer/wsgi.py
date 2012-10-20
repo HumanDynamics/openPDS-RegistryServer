@@ -16,10 +16,11 @@ framework.
 import os
 import sys
 import site
-activate_this = os.path.expanduser("/var/www/trustframework/registryvirtenv/bin/activate_this.py")
-execfile(activate_this, dict(__file__=activate_this))
-sys.path.append('/var/www/trustframework/registryvirtenv/OMS-RegistryServer/registryServer');
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
+
+django.conf.ENVIRONMENT_VARIABLE = "DJANGO_REGISTRY_SETTINGS_MODULE"
+
+os.environ.setdefault("DJANGO_REGISTRY_SETTINGS_MODULE", "registryServer.settings")
+
 
 # This application object is used by any WSGI server configured to use this
 # file. This includes Django's development server, if the WSGI_APPLICATION
