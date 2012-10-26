@@ -51,7 +51,7 @@ def get_key_from_token(request):
         response_content['status']="success"
     except Exception as e:
         response_content['status']="error"
-        response_content['message']="failed to get key from token"
+        response_content['message']="failed to get key from token:"
 	print e
 
     return HttpResponse(json.dumps(response_content), mimetype="application/json")
