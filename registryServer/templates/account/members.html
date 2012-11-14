@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+
+{% block title %}Members of your Trust Network{% endblock %}
+
+{% block content %}
+
+	<h1>Members of your Trust Network</h1>
+
+	<div class="content_container">
+	{% if clients %}
+	<table class="data">
+			<tr>
+				<th>Owner</th>
+				<th>Name</th>
+				<th colspan="1">Credentials</th>
+				<th>client_id</th>
+			</tr>
+		{% for client in clients %}
+			<tr>
+				<td class="left">{{ client.user }}</td>
+				<td rowspan="1"><a href="/client/{{ client.key }}">{{ client.name }}</td>
+				<td class="right">Key:</td>
+				<td class="left">{{ client.key }}</td>
+			</tr>
+		{% endfor %}
+	</table>
+	{% endif %}
+	
+	</div>
+	
+
+{% endblock %}

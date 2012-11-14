@@ -1,0 +1,136 @@
+{% extends "layout.html" %}
+{% load uni_form_tags %}
+
+{% block title %}A Location Question{% endblock %}
+<button type="button" class="btn btn-primary" data-loading-text="Loading...">Loading state</button>
+
+{% block content %}
+<script src="/static/js/codemirror.js"></script>
+<script src="/static/js/mirrorframe.js"></script>
+<link rel="stylesheet" href="/static/css/docs.css">
+<div class="container"> 
+<div class="dropdown"> 
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Scripts<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+			{% for script in scripts %}
+				<li><a href="javascript:script = {'name':'{{ script.name }}', 'code': '{{ script.code }}', 'id': '{{ script.id }}'};editor.mirror.setCode(script.code);">{{ script.name }}</a></li>
+			{% endfor %}
+                        </ul>
+</div>
+
+        <div id="doModal" class="modal hide fade in" style="display: none; ">
+                <div class="modal-header">
+                        <a class="close" data-dismiss="modal">×</a>
+                        <h3>Please give the new script a name</h3>
+                </div>
+                <div class="modal-body">
+                   <h3> <ul>
+                        <li><input id="script_name" type="text" placeholder="Please give the new script at name"></li>
+                    </ul></h3>
+                </div>
+                <div class="modal-footer">
+                        <a href="javascript:saveScriptAs();" class="btn btn-success">Save</a>
+                        <a href="#" class="btn" data-dismiss="modal">Close</a>
+                </div>
+        </div>
+
+
+<textarea id="code" rows="20" cols="200" background-color="gray">
+Start typing your script...
+</textarea>
+<a href="javascript:saveScript();" class="btn btn-primary btn-large" >Save Script</a>
+<a id="saveAsButton" href="#doModal" class="btn btn-primary btn-large" data-toggle="modal" >Save Script As</a>
+<a href="javascript:evaluateSandbox();" class="btn btn-primary btn-large" >Evaluate</a>
+<div id="answer" ></div>
+
+</div>  
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>  
+<script src="/static/js/bootstrap-modal.js"></script>  
+</div>  
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>  
+<script src="/static/js/bootstrap-dropdown.js"></script>  
+<script src="/static/js/bootstrap-modal.js"></script>  
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&libraries=drawing"></script>
+<script type="text/javascript">
+var script = {};
+function saveScript(){
+	if (typeof this.script.name === "undefined")
+	{
+		$("#saveAsButton").trigger("click");
+		return;
+	}
+	this.script.code = editor.mirror.getCode();
+           $.ajax({
+                url: "/questions/update/",
+                accept: "application/json",
+                type: "POST",
+                data: this.script,
+                success: function(data, status) {
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    x = jqXHR;
+                },
+                dataType: "json",
+                
+            });
+	window.location.reload();
+}
+function saveScriptAs(){
+        this.script.code = editor.mirror.getCode();
+	this.script.name = $('#script_name').val();
+	this.script.id = null;
+           $.ajax({
+                url: "/questions/update/",
+                accept: "application/json",
+                type: "POST",
+                data: this.script,
+                success: function(data, status) {
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    x = jqXHR;
+                },
+                dataType: "json",
+                
+            });
+        window.location.reload();
+}
+function evaluateSandbox(){
+        this.script.code = editor.mirror.getCode();
+           $.ajax({
+                url: "http://localhost:8080",
+                accept: "application/json",
+                type: "POST",
+                data: this.script.code,
+                success: function(data, status) {
+		alert("completed");
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    x = jqXHR;
+                },
+                dataType: "json",
+                
+            });
+}
+
+var textarea = document.getElementById('code');
+var codemirror = CodeMirror.replace(textarea);
+  var editor = new MirrorFrame(codemirror, {
+    height: "350px",
+    content: textarea.value,
+    parserfile: ["tokenizejavascript.js", "parsejavascript.js"],
+    stylesheet: "/static/css/jscolors.css",
+    path: "/static/js/",
+    autoMatchParens: true
+  });
+
+    </script>
+<script type="text/javascript" language="javascript" >
+    $(document).ready(function () {
+          $('.dropdown-toggle').dropdown();
+    }); 
+ </script>
+
+</div>  
+
+{% endblock %}
+
