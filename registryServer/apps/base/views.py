@@ -1,24 +1,85 @@
 #-*- coding: utf-8 -*-
 
-
+import httplib
+import json
 from django.shortcuts import render_to_response, HttpResponse, redirect
 from django.template import RequestContext
 from oauth2app.models import Client, AccessToken
 from django.contrib.auth.decorators import login_required
+from django import forms
+from apps.account.models import Profile
+
+class LocationForm(forms.Form):
+    location = forms.CharField()
 
 @login_required
 def homepage(request):
+
     template = {}
+
     if request.user.is_authenticated():
+	user_profile = None
+	try:
+	    user_profile = request.user.get_profile()
+	except:
+	    # On first login, a user will not have a profile...what to do?
+	    new_profile = Profile()
+	    new_profile.user = request.user
+	
+	    new_client = Client(name=request.user.username+"_pds", user=request.user, description="user "+request.user.username+"'s Personal Data Store", redirect_uri="http://"+new_profile.pds_ip+":"+new_profile.pds_port+"/?username="+request.user.username)
+	    new_client.save()
+	    new_profile.pds_client = new_client
+	    new_profile.save()
+
+	if request.GET.get('location'):
+	    new_profile = request.user.get_profile()
+	    new_location = request.GET['location'].split(":")
+
+	    new_profile.pds_ip = new_location[0]
+	    new_profile.pds_port = new_location[1]
+
         clients = Client.objects.filter(user=request.user)
-        access_tokens = AccessToken.objects.filter(user=request.user)
-        access_tokens = access_tokens.select_related()
+        access_tokens = AccessToken.objects.filter(user=request.user).select_related()
+#        access_tokens = access_tokens.select_related()
+	form = LocationForm()
+
         template["access_tokens"] = access_tokens
         template["clients"] = clients
+        template["profile"] = user_profile
+	template['form']=form
+	template['isup']=is_pds_up(user_profile)
+
     return render_to_response(
         'base/homepage.html', 
         template, 
         RequestContext(request))
+
+
+def is_pds_up(profile):
+    '''Verifies that a user's PDS is set up and responding'''
+#    pds_location = profile.pds_location
+
+    try:
+	path = profile.pds_ip+":"+profile.pds_port
+	print path
+        conn = httplib.HTTPConnection(path, timeout=100)
+        request_path="/discovery/ping"
+        conn.request("GET",str(request_path))
+        r1 = conn.getresponse()
+        response_text = r1.read()
+	print response_text
+        result = json.loads(response_text)
+
+        if result['success'] != True:
+             raise Exception(result['message'])
+        conn.close()
+        return True
+    except Exception as ex:
+        print ex
+        return False
+
+
+
     
 
 #TODO DELETE this section. testing mongoEngine

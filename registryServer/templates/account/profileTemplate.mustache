@@ -1,7 +1,7 @@
 <div>
 Username
 <input 
-	type="textbox" 
+	type="text" 
 	profileFieldName="user.username" 
 	value="{{ user.username }}" 
 	class="profileAttribute" 
@@ -17,7 +17,7 @@ Password
 <div>
 Email
 <input 
-	type="textbox"
+	type="text"
 	class="profileAttribute"
 	profileFieldName="user.email"
 	value="{{ user.email }}" />
@@ -25,7 +25,7 @@ Email
 <div>
 First name 
 <input 
-	type="textbox" 
+	type="text" 
 	class="profileAttribute" 
 	profileFieldName="user.first_name" 
 	value="{{ user.first_name }}" />
@@ -33,7 +33,7 @@ First name
 <div>
 Last name
 <input 
-	type="textbox"
+	type="text"
 	class="profileAttribute" 
 	profileFieldName="user.last_name" 
 	value="{{ user.last_name }}" />
@@ -55,13 +55,22 @@ Superuser?
 	{{#user}} {{#is_superuser}}checked{{/is_superuser}} {{/user}} />
 </div>
 <div>
-PDS Location
+PDS IP 
 <input 
-	type="textbox"
+	type="text"
 	class="profileAttribute"
-	profileFieldName="pds_location"
-	value="{{ pds_location }}" />
+	profileFieldName="pds_ip"
+	value="{{ pds_ip }}" />
 </div>
+(ex. "127.0.0.1")
+PDS Port 
+<input 
+	type="text"
+	class="profileAttribute"
+	profileFieldName="pds_port"
+	value="{{ pds_port }}" />
+</div>
+(ex. "80")
 <div>
 <input
 	type="button"

@@ -51,6 +51,15 @@ def profiles(request):
         {},
         RequestContext(request))
 
+def members(request): 
+    clients = Client.objects.all()
+    template = {}
+    template['clients'] = clients
+    return render_to_response(
+        'account/members.html',
+        template,
+        RequestContext(request))
+
 def signup(request):
     if request.method == "POST":
         form = SignupForm(request.POST)

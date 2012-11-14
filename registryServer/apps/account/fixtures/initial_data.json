@@ -6,13 +6,5 @@
       "description": "Send raw funf data to your DataStore & Change funf/group sharing Settings",
       "key": "funf_write"
     }
-  },
-  {
-    "pk": 5,
-    "model": "oauth2app.accessrange",
-    "fields": {
-      "description": "Access Psychological Aggregates",
-      "key": "psy_aggregates"
-    }
   }
 ]

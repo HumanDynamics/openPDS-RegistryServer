@@ -1,6 +1,10 @@
 # XXX - bring back default comments to this file...
 import os
 
+#pdsDefault = "http://localhost:8003"
+pdsDefaultIP = "192.168.110.194"
+pdsDefaultPort = "8003"
+
 PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
 
 DEBUG = True
@@ -147,6 +151,7 @@ INSTALLED_APPS = (
     'apps.client',
     'apps.account',
     'apps.oauth2',
+    'apps.questions',
     'uni_form',
     'oauth2app',
     'django_extensions',

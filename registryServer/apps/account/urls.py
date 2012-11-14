@@ -21,6 +21,7 @@ urlpatterns = patterns('apps.account.views',
 #    (r'^json_auth$',	'json_auth'),
     (r'^api/', include(v1_api.urls)),
     (r'^profiles', 'profiles'),
+    (r'^members', 'members'),
 )
 urlpatterns += patterns('',
   (r'^login/?$',                  'django.contrib.auth.views.login', {'template_name': 'account/login.html'}),

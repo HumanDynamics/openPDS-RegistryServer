@@ -4,6 +4,7 @@ from tastypie import fields
 from tastypie.authorization import DjangoAuthorization, Authorization
 from tastypie.resources import ModelResource, ALL, ALL_WITH_RELATIONS
 from django.db import IntegrityError
+from oauth2app.models import Client
 import pdb
 
 class UserResource(ModelResource):
@@ -27,9 +28,16 @@ class GroupResource(ModelResource):
         authorization = Authorization()
 #	excludes = ['is_staff', 'is_superuser', 'last_login', 'password', 'date_joined']
 
+class ClientResource(ModelResource):
+    class Meta:
+        queryset = Client.objects.all()
+        authorization = Authorization()
+#	excludes = ['is_staff', 'is_superuser', 'last_login', 'password', 'date_joined']
+
 class ProfileResource(ModelResource):
     user = fields.ForeignKey(UserResource, 'user', full=True)
     group = fields.ForeignKey(GroupResource, 'group', full=True, null=True, blank=True)
+#    client = fields.ForeignKey(ClientResource, 'client', full=True, null=True, blank=True)
 
     class Meta:
         queryset = Profile.objects.all()

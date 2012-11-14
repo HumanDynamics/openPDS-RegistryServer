@@ -19,15 +19,19 @@
 {% endblock %}
 
 {% block content %}
+<div class="content_container">
 
-<form>
-<h2>Create a new profile</h2>
-<div id='profile' class="profileContainer">
+	<div class="form_container">
+		<form>
+		<h2>Create a new profile</h2>
+		<div id='profile' class="profileContainer">
+		</div>
+		<h2>Existing Profiles</h2>
+		<ul id='profileList' class="profileContainer">
+		</ul>
+		</form>
+	</div>
 </div>
-<h2>Existing Profiles</h2>
-<ul id='profileList' class="profileContainer">
-</ul>
-</form>
 
 {% endblock %}
 
