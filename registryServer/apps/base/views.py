@@ -60,7 +60,7 @@ def is_pds_up(profile):
 #    pds_location = profile.pds_location
 
     try:
-	path = profile.pds_ip+":"+profile.pds_port
+	path = str(profile.pds_ip)+":"+str(profile.pds_port)
 	print path
         conn = httplib.HTTPConnection(path, timeout=100)
         request_path="/discovery/ping"
