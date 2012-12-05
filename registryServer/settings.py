@@ -4,6 +4,7 @@ import os
 #pdsDefault = "http://localhost:8003"
 pdsDefaultIP = "192.168.110.194"
 pdsDefaultPort = "8003"
+SERVER_UPLOAD_DIR = '/var/www/trustframework/'
 
 PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
 
@@ -21,7 +22,8 @@ DATABASES = {
         # supported db backends are 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'
         #'ENGINE': 'django.db.backends.mysql', 
         'ENGINE': 'django.db.backends.sqlite3', 
-        'NAME': '/var/www/trustframework/test.db',      
+#        'NAME': '/var/www/trustframework/test.db',      
+        'NAME': 'test.db',      
         'USER': 'test',      
         'PASSWORD': 'test',  
         'HOST': '',      
