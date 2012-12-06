@@ -5,8 +5,8 @@ import logging, random, hashlib, string
 urlpatterns = patterns('apps.funf_connector.views',
     (r'^set_funf_data$',                 'data'),
     (r'^set_funf_key$',                 'write_key'),
-    (r'^config$',                 'config'),
-    (r'^setup$',                 'setup'),
+#    (r'^config$',                 'config'),
+#    (r'^setup$',                 'setup'),
 
 )
 
