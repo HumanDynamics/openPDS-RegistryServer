@@ -4,6 +4,7 @@ pymongo
 PyMySQL
 # XXX - re-enable once we make postgresql / mysql an developer-defined detail
 #psycopg2
+pycrypto
 django-extensions
 django-uni-form
 django-tastypie==0.9.11
