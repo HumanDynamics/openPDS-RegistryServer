@@ -7,9 +7,7 @@ PyMySQL
 #psycopg2
 django-extensions
 django-uni-form
-mysql-python
 django-tastypie==0.9.11
-django-tastypie-mongoengine
 mongoengine
 
 
