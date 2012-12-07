@@ -1,7 +1,7 @@
 # XXX - bring back default comments to this file...
 import os
 
-pdsDefaultIP = "127.0.0.1:"
+pdsDefaultIP = "127.0.0.1"
 pdsDefaultPort = "8031"
 SERVER_UPLOAD_DIR = '/var/www/trustframework/'
 
