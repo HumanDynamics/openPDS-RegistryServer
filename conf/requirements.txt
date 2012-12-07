@@ -8,6 +8,7 @@ django-extensions
 django-uni-form
 django-tastypie==0.9.11
 mongoengine
+requests
 
 
 
