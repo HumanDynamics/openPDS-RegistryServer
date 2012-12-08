@@ -22,7 +22,6 @@ class Profile(models.Model):
   pds_ip = models.GenericIPAddressField(default=str(settings.pdsDefaultIP))
   pds_port = models.PositiveIntegerField(default=str(settings.pdsDefaultPort))
   funf_password = models.CharField(max_length=100)
-  funf_token = models.CharField(max_length=100)
 #  pds_client = models.ForeignKey(Client, unique=True)
   def __unicode__(self):
     return self.user.username

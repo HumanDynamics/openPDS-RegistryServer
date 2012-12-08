@@ -1,16 +1,14 @@
 # XXX add specific version numbers once we can confirm the latest stable versions all work
 django
-pycrypto
 pymongo
-PyMySQL
 # XXX - re-enable once we make postgresql / mysql an developer-defined detail
 #psycopg2
+pycrypto
 django-extensions
 django-uni-form
-mysql-python
 django-tastypie==0.9.11
-django-tastypie-mongoengine
 mongoengine
+requests
 
 
 

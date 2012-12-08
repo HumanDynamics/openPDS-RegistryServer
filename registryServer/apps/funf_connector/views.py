@@ -7,7 +7,6 @@ import httplib
 import hashlib
 import datetime
 from django.http import HttpResponse, HttpResponseBadRequest
-from trustWrapper import *
 from django.utils import simplejson as json_simple
 import logging, random, hashlib, string
 import dbmerge, os
