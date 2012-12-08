@@ -70,15 +70,25 @@ def setup(request):
 
     if request.method == 'POST':
         try:
-	    print request.body
-	    btoken = request.GET['bearer_token']
-	    key = request.POST['key']
-	    scope = "funf_write"
-	    pds = Pds(btoken,scope)
-	    json_key = {"key":key}
-            insres = insert_pds(pds.location,"api/personal_data/funfconfig/?format=json&token="+str(btoken)+"&scope="+str(scope)+"&multiPDS_user="+str(pds.key),json_key)
-	    result = {'status':'success'}
-	    response = tfcore.jsonHTTPresponse(result)
+	    scope = AccessRange.objects.get(key="funf_write")
+ 	    authenticator = Authenticator(scope=scope)
+	    try:
+	        # Validate the request.
+	        authenticator.validate(request)
+	    except AuthenticationException:
+	        # Return an error response.
+	        return authenticator.error_response(content="You didn't authenticate.")
+	    username = authenticator.user.get_profile()
+	
+	    return HttpResponse(content="Hi %s, You authenticated!" % username)
+#	    print request.body
+#	    btoken = request.GET['bearer_token']
+#	    key = request.POST['key']
+#	    scope = "funf_write"
+#	    json_key = {"key":key}
+#	    
+#	    result = {'status':'success'}
+#	    response = tfcore.jsonHTTPresponse(result)
 	
         except Exception as ex:
 	    print "EXCEPTION:"
@@ -119,14 +129,21 @@ def write_key(request):
     try:
 	token = request.GET['bearer_token']
 	scope = "funf_write"
-	pds = Pds(token,scope)
-	pds_data = json.loads(request.body)
 	print "POST data"
-	print pds_data
-        insres = insert_pds(pds.location,"api/personal_data/funfconfig/?format=json&token="+str(token)+"&scope="+str(scope)+"&MultiPDS_user="+str(pds.key),pds_data)
-	print insres
-	result = {'status':'success'}
-	response = tfcore.jsonHTTPresponse(result)
+        scope = AccessRange.objects.get(key="funf_write")
+        authenticator = Authenticator(scope=scope)
+        try:
+            # Validate the request.
+            authenticator.validate(request)
+        except AuthenticationException:
+            # Return an error response.
+            return authenticator.error_response(content="You didn't authenticate.")
+        username = authenticator.user.get_profile().funf_password
+	profile = authenticator.user.get_profile()
+	profile.funf_password = json.loads(request.raw_post_data)['key']
+	profile.save()
+	response_content = json.dumps({'status':'success'})
+        response = HttpResponse(content=response_content)
 	
     except Exception as ex:
 	print "EXCEPTION:"
