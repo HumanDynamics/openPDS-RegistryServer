@@ -56,8 +56,10 @@ class ProfileResource(ModelResource):
     def obj_update(self, bundle, request=None, **kwargs): 
         try:
             bundle = super(ProfileResource, self).obj_update(bundle, request, **kwargs)
-            bundle.obj.user.set_password(bundle.obj.user.password)
-            bundle.obj.user.save()
+            # Don't update the password if the user didn't fill one out...
+            if (bundle.obj.user.password):
+                bundle.obj.user.set_password(bundle.obj.user.password)
+                bundle.obj.user.save()
         except IntegrityError:
             raise BadRequest('Invalid request')
         return bundle
