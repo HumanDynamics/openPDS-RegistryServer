@@ -7,6 +7,16 @@ Username
 	class="profileAttribute" 
 	id="usernameTextbox{{id}}" />
 </div>
+{{#user}}
+<div>
+UUID
+<input
+    type="text"
+    profileFieldName="uuid"
+    class="profileAttribute"
+    value="{{ uuid }}" />
+</div>
+{{/user}}
 {{^user}}
 <div>
 Password
