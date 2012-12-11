@@ -23,7 +23,9 @@
 			<p>You are an administrator. Go to the <a href="/account/profiles">Profile Page</a> to create and edit users.</p>
 		{% endif %}
 
-		<button onclick="http://{{ profile.pds_ip }}:{{ profile.pds_port }}/api/personal_data/funf/?format=json&datastore_owner={{ profile.uuid }}&bearer_token=dummy">view funf data</button>
+		<a class="btn btn-primary btn-large" href="http://{{ profile.pds_ip }}:{{ profile.pds_port }}/api/personal_data/funf/?format=json&datastore_owner={{ profile.uuid }}&bearer_token=dummy">
+      View Funf Data
+	        </a>
 	
 	{% if access_tokens %}
 	<p>You have issued the following access tokens.</p>
