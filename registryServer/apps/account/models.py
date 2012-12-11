@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django_extensions.db.fields import UUIDField
 import settings
 from oauth2app.models import Client
 import uuid
@@ -17,7 +16,6 @@ import uuid
 
 class Profile(models.Model):
   user = models.ForeignKey(User, unique=True)
-  uuid = UUIDField(primary_key=False)
   group = models.ForeignKey('Group', blank=True, null=True)
 #  pds_location = models.URLField(max_length=100, default=str(settings.pdsDefault))
   pds_ip = models.GenericIPAddressField(default=str(settings.pdsDefaultIP))
