@@ -58,12 +58,4 @@ class ProfileResource(ModelResource):
         except IntegrityError: 
             raise BadRequest('Username already exists')
         return bundle
-    
-    def obj_update(self, bundle, request=None, **kwargs): 
-        try:
-            bundle = super(ProfileResource, self).obj_update(bundle, request, **kwargs)
-            bundle.obj.user.save()
-        except IntegrityError:
-            raise BadRequest('Invalid request')
-        return bundle
-        
+
