@@ -38,27 +38,23 @@ def get_key_from_token(request):
         scope = AccessRange.objects.get(key=str(request.GET['scope']))
         authenticator = JSONAuthenticator(scope=scope)
         authenticator.validate(request)
-	if request.GET.get('hostid'):
-	    u2u = get_object_or_404(UserToUser,id=request.GET['hostid'])
-	    #a request from a peer
-	    role_list = []
-	    role_list.append(u2u.role)
-	    response_content['roles'] = role_list
-	    response_content['request_type'] = "peer"
-	else:
-	    response_content['request_type'] = "self"
-	    #a request from self (host=guest)
-        response_content['key']=str(authenticator.user.pk)
-        try:
-           response_content['pds_location']=authenticator.user.get_profile().pds_location
-        except:
-           response_content['pds_location']=''
-
-        response_content['status']="success"
+        if request.GET.get('hostid'):
+            u2u = get_object_or_404(UserToUser,id=request.GET['hostid'])
+            #a request from a peer
+            role_list = []
+            role_list.append(u2u.role)
+            response_content['roles'] = role_list
+            response_content['request_type'] = "peer"
+        else:
+            response_content['request_type'] = "self"
+            #a request from self (host=guest)
+            response_content['key']=authenticator.user.get_profile().uuid
+            response_content['pds_location']=authenticator.user.get_profile().pds_ip
+            response_content['status']="success"
     except Exception as e:
         response_content['status']="error"
         response_content['message']="failed to get key from token:"
-	print e
+        print e
 
     return HttpResponse(json.dumps(response_content), mimetype="application/json")
 

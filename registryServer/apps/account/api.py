@@ -11,10 +11,9 @@ class UserResource(ModelResource):
     class Meta:
         queryset = User.objects.all()
         authorization = Authorization()
-#	excludes = ['is_staff', 'is_superuser', 'last_login', 'password', 'date_joined']
+        excludes = ['last_login', 'password', 'date_joined']
  
     def obj_create(self, bundle, request=None, **kwargs):
-        pdb.set_trace()
         username, password = bundle.data['username'], bundle.data['password']
         try: 
             bundle.obj = User.objects.create_user(username, '', password)
@@ -51,9 +50,10 @@ class ProfileResource(ModelResource):
 #	excludes = ['is_staff', 'is_superuser', 'last_login', 'password', 'date_joined']
    
     def obj_create(self, bundle, request=None, **kwargs): 
-        try:                
+        try:
+            password = bundle.data["user"].pop("password")
             bundle = super(ProfileResource, self).obj_create(bundle, request, **kwargs)
-            bundle.obj.user.set_password(bundle.obj.user.password)
+            bundle.obj.user.set_password(password)
             bundle.obj.user.save()
         except IntegrityError: 
             raise BadRequest('Username already exists')
@@ -62,7 +62,6 @@ class ProfileResource(ModelResource):
     def obj_update(self, bundle, request=None, **kwargs): 
         try:
             bundle = super(ProfileResource, self).obj_update(bundle, request, **kwargs)
-            bundle.obj.user.set_password(bundle.obj.user.password)
             bundle.obj.user.save()
         except IntegrityError:
             raise BadRequest('Invalid request')

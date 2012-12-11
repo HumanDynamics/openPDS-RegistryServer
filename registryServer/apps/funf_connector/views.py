@@ -24,10 +24,13 @@ import sys
 import settings
 from django.template import RequestContext
 from django.shortcuts import redirect
+from django.shortcuts import render_to_response
 from django.utils.http import urlencode
 from oauth2app.authenticate import Authenticator, AuthenticationException, JSONAuthenticator
-from oauth2app.models import AccessRange
 import requests
+from oauth2app.models import AccessRange, AccessToken
+import apps.oauth2
+from django.contrib.auth.decorators import login_required
 
 upload_dir = settings.SERVER_UPLOAD_DIR
 
@@ -42,6 +45,35 @@ def insert_pds(profile, token, pds_json):
     except Exception as ex:
 	raise Exception(ex)
     return response
+
+@login_required
+def install_journal(request):
+    #request.user
+    scope = AccessRange.objects.get(key="funf_write")
+    access_tokens = AccessToken.objects.filter(user=request.user, scope=scope)
+    access_token = access_tokens[0]
+    host = request.get_host()
+    path = "/connectors/funf/journal"
+    template = {'bearer_token': access_token.token, 'host': host, 'path': path}
+
+    return render_to_response('funf/install_journal.html', template, RequestContext(request))
+
+def journal(request):
+    '''used for funf journal integration.  This should be called from "link with server" from the funf journal application'''
+    bearer_token = None
+    print request.GET.__contains__('bearer_token')
+    if request.GET.__contains__('bearer_token'):
+        bearer_token = request.GET.get('bearer_token')
+    else:
+        return redirect('/connectors/funf/install_journal')
+        
+    config_uri = request.build_absolute_uri()
+    upload_host = "http://"+request.get_host()
+    upload_path = "/connectors/funf/set_funf_data"
+    template = {'config_uri':config_uri, 'upload_host': upload_host, 'upload_path': upload_path, 'bearer_token': bearer_token}
+    print template
+    return render_to_response('funf/config.json', template, RequestContext(request))
+    
 
 def write_key(request):
     '''write the password used to encrypt funf database files to your PDS'''

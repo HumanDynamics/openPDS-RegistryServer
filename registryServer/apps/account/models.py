@@ -1,8 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django_extensions.db.fields import UUIDField
 import settings
 from oauth2app.models import Client
+import uuid
 
 #def create_profile_for_user(user):
 #   '''utility function for creating a user, client and profile necessary for instantiating a PDS with a Trust Network'''
@@ -16,13 +16,13 @@ from oauth2app.models import Client
 
 class Profile(models.Model):
   user = models.ForeignKey(User, unique=True)
-  uuid = UUIDField(primary_key=False)
   group = models.ForeignKey('Group', blank=True, null=True)
 #  pds_location = models.URLField(max_length=100, default=str(settings.pdsDefault))
   pds_ip = models.GenericIPAddressField(default=str(settings.pdsDefaultIP))
   pds_port = models.PositiveIntegerField(default=str(settings.pdsDefaultPort))
   funf_password = models.CharField(max_length=100)
 #  pds_client = models.ForeignKey(Client, unique=True)
+  uuid = models.CharField(max_length=36, unique=True, default=uuid.uuid4)
   def __unicode__(self):
     return self.user.username
   def set_default_client(self):
