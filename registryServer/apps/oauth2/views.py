@@ -1,14 +1,15 @@
 #-*- coding: utf-8 -*-
-
-
+import json, ast
 from django.shortcuts import render_to_response
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.template import RequestContext
 from uni_form.helpers import FormHelper, Submit, Reset
 from django.contrib.auth.decorators import login_required
 from oauth2app.authorize import Authorizer, MissingRedirectURI, AuthorizationException
 from oauth2app.authorize import UnvalidatedRequest, UnauthenticatedUser
 from apps.oauth2.forms import AuthorizeForm
+from oauth2app.models import AccessRange
+from oauth2app.authenticate import Authenticator, AuthenticationException, JSONAuthenticator
 
 
 @login_required
@@ -17,6 +18,25 @@ def missing_redirect_uri(request):
         'oauth2/missing_redirect_uri.html', 
         {}, 
         RequestContext(request))
+
+def userinfo(request):
+    scope = AccessRange.objects.get(key="funf_write")
+    authenticator = JSONAuthenticator(scope=scope)
+    try:
+        # Validate the request.
+        authenticator.validate(request)
+    except AuthenticationException as e:
+        # Return an error response.
+        print e
+        return authenticator.error_response("You didn't authenticate.")
+    profile = authenticator.user.get_profile()
+    response_dict = {}
+    response_dict['id'] = profile.uuid
+    response_dict['email'] = profile.user.email
+    response_dict['name'] = profile.user.username
+    response_dict['pds_location'] = 'http://'+str(profile.pds_ip)+":"+str(profile.pds_port)
+
+    return HttpResponse(json.dumps(response_dict), content_type='application/json')
 
 
 @login_required

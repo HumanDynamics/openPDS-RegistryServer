@@ -27,23 +27,20 @@ from django.shortcuts import redirect
 from django.shortcuts import render_to_response
 from django.utils.http import urlencode
 from oauth2app.authenticate import Authenticator, AuthenticationException, JSONAuthenticator
+import requests
 from oauth2app.models import AccessRange, AccessToken
 import apps.oauth2
 from django.contrib.auth.decorators import login_required
 
 upload_dir = settings.SERVER_UPLOAD_DIR
 
-def insert_pds(hostname, path, pds_json):
-    # upon success, will return a json {'key':'value'}
-    userinfo = {}
+def insert_pds(profile, token, pds_json):
     try:
         # get pds location and user id
-        request_path=str(hostname)+str(path)
-	data = json.dumps(pds_json)
-	req = urllib2.Request(request_path, data, {'Content-Type': 'application/json'})
-	f = urllib2.urlopen(req)
-	response = f.read()
-	f.close()
+	request_path= "http://"+str(profile.pds_ip)+":"+str(profile.pds_port)+"/api/personal_data/funf/?format=json&bearer_token="+str(token)+"&datastore_owner="+str(profile.uuid)
+	payload = json.dumps(pds_json)
+	r = requests.post(request_path, data=payload)
+	response = r.text
 
     except Exception as ex:
 	raise Exception(ex)
@@ -132,14 +129,12 @@ def data(request):
         return authenticator.error_response(content="You didn't authenticate.")
     profile = authenticator.user.get_profile()
     funf_password = profile.funf_password	
-    print funf_password
 
     try:
 	    
         scope = 'funf_write'
 	token = request.GET['bearer_token']
 
-	print "starting data upload"
 	try:
             key = decrypt.key_from_password(str(funf_password))
 	    print key
@@ -160,14 +155,13 @@ def data(request):
 	    pds_data['time']=json_insert.get('timestamp')
 	    pds_data['value']=json_insert
 	    pds_data['key']=json_insert.get('probe')
-	    insert_pds("http://"+str(profile.pds_ip)+":"+str(profile.pds_port)+"/","api/personal_data/funf/?format=json&bearer_token="+str(token)+"&scope="+str(scope)+"&datastore_owner="+str(profile.uuid),pds_data)
+	    insert_pds(profile, token, pds_data)
 	    print "inserting row..."
 	    print pds_data
 	    inserted.append(convert_string(json_insert)+'\n')
 	result = {'success': True, 'message':''.join(inserted)} 
 			
     except Exception as e:
-	print e
         result = {'success':False, 'error_message':e.message}
 
     finally:
