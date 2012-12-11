@@ -119,31 +119,31 @@ def get_user_list(request):
         content_type='application/json')
     return response
 
-@login_required
-def init_pds(request):
-    user_ids = list()
-    profs = Profile.objects.all()
-    for p in profs:
-        user_ids.append(p.id)
-
-    profile = request.user.get_profile()
-#    scope_url = 'http://'+str(profile.pds_ip)+":"+str(profile.pds_port)+'/api/personal_data/scope/'
-#    purpose_url = 'http://'+str(profile.pds_ip)+":"+str(profile.pds_port)+'/api/personal_data/pupose/'
-    role_url = 'http://'+str(profile.pds_ip)+":"+str(profile.pds_port)+'/api/personal_data/role/'
-    r = requests.post(role_url, data=json.dumps({"issharing":True,"name":"Family", "datastore_owner": 2}))
-    r = requests.post(role_url, data=json.dumps({"issharing":True,"name":"Peers", "datastore_owner": 2}))
-    r = requests.post(role_url, data=json.dumps({"issharing":True,"name":"Care_Team", "datastore_owner": 2}))
-#    sharinglevel_url = 'http://'+str(profile.pds_ip)+":"+str(profile.pds_port)+'/api/personal_data/sharinglevel/'
-#    payload = {'some': 'data'}
-
-    
-
-    json_dic = {"success":True}
-    response_content = json.dumps(json_dic)
-    response = HttpResponse(
-        content=response_content,
-        content_type='application/json')
-    return response
+#@login_required
+#def init_pds(request):
+#    user_ids = list()
+#    profs = Profile.objects.all()
+#    for p in profs:
+#        user_ids.append(p.id)
+#
+#    profile = request.user.get_profile()
+##    scope_url = 'http://'+str(profile.pds_ip)+":"+str(profile.pds_port)+'/api/personal_data/scope/'
+##    purpose_url = 'http://'+str(profile.pds_ip)+":"+str(profile.pds_port)+'/api/personal_data/pupose/'
+#    role_url = 'http://'+str(profile.pds_ip)+":"+str(profile.pds_port)+'/api/personal_data/role/'
+#    r = requests.post(role_url, data=json.dumps({"issharing":True,"name":"Family", "datastore_owner": 2}))
+#    r = requests.post(role_url, data=json.dumps({"issharing":True,"name":"Peers", "datastore_owner": 2}))
+#    r = requests.post(role_url, data=json.dumps({"issharing":True,"name":"Care_Team", "datastore_owner": 2}))
+##    sharinglevel_url = 'http://'+str(profile.pds_ip)+":"+str(profile.pds_port)+'/api/personal_data/sharinglevel/'
+##    payload = {'some': 'data'}
+#
+#    
+#
+#    json_dic = {"success":True}
+#    response_content = json.dumps(json_dic)
+#    response = HttpResponse(
+#        content=response_content,
+#        content_type='application/json')
+#    return response
 
 
 #def get_sid_from_id(request):
