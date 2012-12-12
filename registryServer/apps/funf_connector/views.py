@@ -37,7 +37,7 @@ upload_dir = settings.SERVER_UPLOAD_DIR
 def insert_pds(profile, token, pds_json):
     try:
         # get pds location and user id
-	request_path= "http://"+str(profile.pds_ip)+":"+str(profile.pds_port)+"/api/personal_data/funf/?format=json&bearer_token="+str(token)+"&datastore_owner="+str(profile.uuid)
+	request_path= "http://"+str(profile.pds_ip)+":"+str(profile.pds_port)+"/api/personal_data/funf/?format=json&bearer_token="+str(token)+"&datastore_owner__uuid="+str(profile.uuid)
 	payload = json.dumps(pds_json)
 	r = requests.post(request_path, data=payload)
 	response = r.text

@@ -3,6 +3,7 @@ from apps.account.models import Profile, Group
 from tastypie import fields
 from tastypie.authorization import DjangoAuthorization, Authorization
 from tastypie.resources import ModelResource, ALL, ALL_WITH_RELATIONS
+from tastypie.exceptions import BadRequest
 from django.db import IntegrityError
 from oauth2app.models import Client, AccessRange
 import pdb
