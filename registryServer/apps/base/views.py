@@ -62,7 +62,7 @@ def is_pds_up(profile):
     try:
 	path = str(profile.pds_ip)+":"+str(profile.pds_port)
 	print path
-        conn = httplib.HTTPConnection(path, timeout=100)
+        conn = httplib.HTTPConnection(path, timeout=2.5)
         request_path="/discovery/ping"
         conn.request("GET",str(request_path))
         r1 = conn.getresponse()
