@@ -1,6 +1,6 @@
 {       "name": "example",
         "version":1,
-        "configUpdateUrl":"{{ config_uri }}?bearer_token={{ bearer_token }}",
+        "configUpdateUrl":"{{ config_uri }}",
         "configUpdatePeriod":10800,
         "dataArchivePeriod":3600,
         "dataUploadUrl":"{{ upload_host }}{{ upload_path }}?bearer_token={{ bearer_token }}",
