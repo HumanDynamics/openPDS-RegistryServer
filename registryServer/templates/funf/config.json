@@ -6,15 +6,15 @@
         "dataUploadUrl":"{{ upload_host }}{{ upload_path }}?bearer_token={{ bearer_token }}",
         "dataUploadPeriod":43200,
         "dataRequests":{
-                "edu.mit.media.funf.probe.builtin.LocationProbe": [
-            { "PERIOD": 900, "DURATION": 30 },
-            { "PERIOD": 3600, "DURATION": 120 }
-        ],
-        "edu.mit.media.funf.probe.builtin.HardwareInfoProbe": [
-            { "PERIOD": 604800 }
-        ],
-        "edu.mit.media.funf.probe.builtin.BatteryProbe": [
-            {}
-        ]
+            "edu.mit.media.funf.probe.builtin.LocationProbe": [
+                { "PERIOD": 900, "DURATION": 30 },
+                { "PERIOD": 3600, "DURATION": 120 }
+            ],
+            "edu.mit.media.funf.probe.builtin.HardwareInfoProbe": [
+                { "PERIOD": 604800 }
+            ],
+            "edu.mit.media.funf.probe.builtin.ActivityProbe": [
+                { "PERIOD": 300, "DURATION": 5}
+            ]
         }
 }
