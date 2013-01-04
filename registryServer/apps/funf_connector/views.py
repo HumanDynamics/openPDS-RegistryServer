@@ -32,6 +32,8 @@ from oauth2app.models import AccessRange, AccessToken
 import apps.oauth2
 from django.contrib.auth.decorators import login_required
 
+import pdb
+
 upload_dir = settings.SERVER_UPLOAD_DIR
 
 def insert_pds(profile, token, pds_json):
@@ -79,9 +81,8 @@ def write_key(request):
     '''write the password used to encrypt funf database files to your PDS'''
     response = None
     try:
-	token = request.GET['bearer_token']
-	scope = "funf_write"
-	print "POST data"
+        token = request.GET['bearer_token']
+        scope = "funf_write"
         scope = AccessRange.objects.get(key="funf_write")
         authenticator = Authenticator(scope=scope)
         try:
@@ -90,16 +91,14 @@ def write_key(request):
         except AuthenticationException:
             # Return an error response.
             return authenticator.error_response(content="You didn't authenticate.")
-        username = authenticator.user.get_profile().funf_password
-	profile = authenticator.user.get_profile()
-	profile.funf_password = json.loads(request.raw_post_data)['key']
-	profile.save()
-	response_content = json.dumps({'status':'success'})
-        response = HttpResponse(content=response_content)
-	
+        profile = authenticator.user.get_profile()
+        profile.funf_password = json.loads(request.raw_post_data)['key']
+        profile.save()
+        response_content = json.dumps({'status':'success'})
+        response = HttpResponse(content=response_content)        
     except Exception as ex:
-	print "EXCEPTION:"
-	print ex
+        print "EXCEPTION:"
+        print ex
         response = HttpResponseBadRequest('failed to write funf key')
     return response
  

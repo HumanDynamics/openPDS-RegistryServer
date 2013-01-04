@@ -20,7 +20,7 @@ class Profile(models.Model):
 #  pds_location = models.URLField(max_length=100, default=str(settings.pdsDefault))
   pds_ip = models.GenericIPAddressField(default=str(settings.pdsDefaultIP))
   pds_port = models.PositiveIntegerField(default=str(settings.pdsDefaultPort))
-  funf_password = models.CharField(max_length=100)
+  funf_password = models.CharField(max_length=100, default="changeme")
 #  pds_client = models.ForeignKey(Client, unique=True)
   uuid = models.CharField(max_length=36, unique=True, default=uuid.uuid4)
   def __unicode__(self):
