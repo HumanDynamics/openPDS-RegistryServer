@@ -4,7 +4,7 @@ import httplib
 import json
 from django.shortcuts import render_to_response, HttpResponse, redirect
 from django.template import RequestContext
-from oauth2app.models import Client, AccessToken
+from oauth2app.models import Client, AccessToken, AccessRange
 from django.contrib.auth.decorators import login_required
 from django import forms
 from apps.account.models import Profile
@@ -40,6 +40,7 @@ def homepage(request):
 
         clients = Client.objects.filter(user=request.user)
         access_tokens = AccessToken.objects.filter(user=request.user).select_related()
+#        funf_access_token = AccessToken.objects.get_or_create(user=request.user, scope="funf_write")
 #        access_tokens = access_tokens.select_related()
 	form = LocationForm()
 

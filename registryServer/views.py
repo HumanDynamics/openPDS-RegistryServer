@@ -8,7 +8,7 @@ import datetime
 import requests
 
 from oauth2app.authenticate import JSONAuthenticator, AuthenticationException, Authenticator, InsufficientScope
-from oauth2app.models import AccessRange
+from oauth2app.models import AccessRange, AccessToken
 from django.contrib.auth.decorators import login_required
 from apps.account.models import UserToUser, User, Profile
 from django.http import HttpResponse
@@ -31,13 +31,47 @@ def js(request):
     response = {"success":True}
     return render_to_response('javascript/test.js' )
 
+#def get_key_from_token(request):
+#    response_content = {}
+#
+#    try:
+#        scope = AccessRange.objects.get(key=str(request.GET['scope']))
+#        authenticator = JSONAuthenticator(scope=scope)
+#        authenticator.validate(request)
+#        if request.GET.get('hostid'):
+#            u2u = get_object_or_404(UserToUser,id=request.GET['hostid'])
+#            #a request from a peer
+#            role_list = []
+#            role_list.append(u2u.role)
+#            response_content['roles'] = role_list
+#            response_content['request_type'] = "peer"
+#        else:
+#            response_content['request_type'] = "self"
+#            #a request from self (host=guest)
+#            response_content['key']=authenticator.user.get_profile().uuid
+#            response_content['pds_location']=authenticator.user.get_profile().pds_ip
+#            response_content['status']="success"
+#    except Exception as e:
+#        response_content['status']="error"
+#        response_content['message']="failed to get key from token:"
+#        print e
+#
+#    return HttpResponse(json.dumps(response_content), mimetype="application/json")
+#
 def get_key_from_token(request):
     response_content = {}
 
     try:
-        scope = AccessRange.objects.get(key=str(request.GET['scope']))
+        scope = AccessRange.objects.get(key="trustframework")
         authenticator = JSONAuthenticator(scope=scope)
         authenticator.validate(request)
+        bearer_token = request.GET['bearer_token']
+        token = AccessToken.objects.get(token=bearer_token)
+        scope_list = list()
+        for s in token.scope.all():
+            scope_list.append(str(s.key))
+        client = token.client.name
+
         if request.GET.get('hostid'):
             u2u = get_object_or_404(UserToUser,id=request.GET['hostid'])
             #a request from a peer
@@ -51,12 +85,15 @@ def get_key_from_token(request):
             response_content['key']=authenticator.user.get_profile().uuid
             response_content['pds_location']=authenticator.user.get_profile().pds_ip
             response_content['status']="success"
+            response_content['client']=client
+            response_content['scopes']=scope_list
     except Exception as e:
         response_content['status']="error"
         response_content['message']="failed to get key from token:"
         print e
 
     return HttpResponse(json.dumps(response_content), mimetype="application/json")
+
 
 
 def get_system_entity_connection(request):
