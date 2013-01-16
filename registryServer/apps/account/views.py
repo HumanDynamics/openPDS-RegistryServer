@@ -7,7 +7,7 @@ from django.template import RequestContext
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from oauth2app.models import Client, AccessRange
+from oauth2app.models import Client, AccessRange, AccessToken
 #from .forms import *
 from django.contrib.admin.views.decorators import staff_member_required
 from datastoreUtils import *
@@ -284,4 +284,17 @@ def json_auth(request):
         response_data['message']="Malformed request.  Ensure your are posting x and y parameters"
     return HttpResponse(json.dumps(response_data), mimetype="application/json")
 
+def dashboard(request):
+    scope_list = list()
+    token_list = list()
+#    accesstoken = AccessToken.objects.get(token=request.GET.get("bearer_token"))
+    accesstokens = AccessToken.objects.filter(user=request.user)
+    for token in accesstokens:
+        for scope in token.scope.all():
+  	    scope_entry = {'key': scope.key, 'description': scope.description}
+	    scope_list.append(scope_entry)
+	token_list.append({'client':token.client.name, 'scopes':scope_list})
+    response_data = {}
+    response_data['tokens_issued']=token_list
+    return HttpResponse(json.dumps(response_data), mimetype="application/json")
 

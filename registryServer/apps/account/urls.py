@@ -1,6 +1,6 @@
 #-*- coding: utf-8 -*-
 from django.conf.urls.defaults import patterns, url, include
-from apps.account.api import UserResource, ProfileResource, GroupResource, ScopeResource
+from apps.account.api import UserResource, ProfileResource, GroupResource, ScopeResource, DashboardResource
 from tastypie.api import Api
 
 user_resource = UserResource()
@@ -10,6 +10,7 @@ v1_api.register(UserResource())
 v1_api.register(ProfileResource())
 v1_api.register(GroupResource())
 v1_api.register(ScopeResource())
+v1_api.register(DashboardResource())
 
 urlpatterns = patterns('apps.account.views',
     (r'^logout/?$',                 'logout'),
@@ -19,6 +20,7 @@ urlpatterns = patterns('apps.account.views',
     (r'^remove_role/([1234567890]+)/([1234567890]+)/(.*)$',             'removeRole'),
     (r'^admin_toolbar/?$',            'adminToolbar'),
     (r'^admin_panel/?$',            'adminToolbar'),
+    (r'^dashboard/?$',            'dashboard'),
 #    (r'^json_auth$',	'json_auth'),
     (r'^api/', include(v1_api.urls)),
     (r'^profiles', 'profiles'),

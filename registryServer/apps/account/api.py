@@ -5,7 +5,7 @@ from tastypie.authorization import DjangoAuthorization, Authorization
 from tastypie.resources import ModelResource, ALL, ALL_WITH_RELATIONS
 from tastypie.exceptions import BadRequest
 from django.db import IntegrityError
-from oauth2app.models import Client, AccessRange
+from oauth2app.models import Client, AccessRange, AccessToken
 import pdb
 
 class UserResource(ModelResource):
@@ -37,6 +37,14 @@ class ClientResource(ModelResource):
 class ScopeResource(ModelResource):
     class Meta:
         queryset = AccessRange.objects.all()
+        authorization = Authorization()
+#	excludes = ['is_staff', 'is_superuser', 'last_login', 'password', 'date_joined']
+
+class DashboardResource(ModelResource):
+    scope = fields.ForeignKey(ScopeResource, "scope")
+
+    class Meta:
+        queryset = AccessToken.objects.all()
         authorization = Authorization()
 #	excludes = ['is_staff', 'is_superuser', 'last_login', 'password', 'date_joined']
 
