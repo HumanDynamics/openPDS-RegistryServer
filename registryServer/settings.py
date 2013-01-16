@@ -151,7 +151,7 @@ INSTALLED_APPS = (
     'apps.base',
     'apps.client',
     'apps.account',
-    'apps.oauth2',
+#    'apps.oauth2',
     'apps.questions',
     'uni_form',
     'oauth2app',
