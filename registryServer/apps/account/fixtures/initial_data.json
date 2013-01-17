@@ -1,10 +1,46 @@
 [
   {
+    "pk": 1,
+    "model": "oauth2app.accessrange",
+    "fields": {
+      "description": "Send raw funf data to your DataStore & Change funf/group sharing Settings.",
+      "key": "funf_write"
+    }
+  },
+  {
+    "pk": 2,
+    "model": "oauth2app.accessrange",
+    "fields": {
+      "description": "An answer to the question of how active am I given my funf data.",
+      "key": "activity"
+    }
+  },
+  {
+    "pk": 3,
+    "model": "oauth2app.accessrange",
+    "fields": {
+      "description": "An answer to the question of how social am I given my funf data.",
+      "key": "sociability"
+    }
+  },
+  {
     "pk": 4,
     "model": "oauth2app.accessrange",
     "fields": {
-      "description": "Send raw funf data to your DataStore & Change funf/group sharing Settings",
-      "key": "funf_write"
+      "description": "An answer to the question of how focused am I given my funf data.",
+      "key": "focus"
+    }
+  },
+  {
+    "pk": 1,
+    "model": "oauth2app.client",
+    "fields": {
+      "name": "Funf Journal",
+      "user": 1,
+      "description": "A remote sensing application that runs on android smartphones.  Also has the capability to report back to remote servers (most commonly the OpenPDS Personal Data Store).",
+      "key": "8741627315a22ca776943ad3a7439b",
+      "secret": "c8de5d147e8a9b1795650f0342e58b",
+      "redirect_uri": "http://127.0.0.1/connectors/funf/install_journal"
     }
   }
 ]

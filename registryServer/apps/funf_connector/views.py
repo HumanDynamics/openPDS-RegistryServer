@@ -28,7 +28,7 @@ from django.shortcuts import render_to_response
 from django.utils.http import urlencode
 from oauth2app.authenticate import Authenticator, AuthenticationException, JSONAuthenticator
 import requests
-from oauth2app.models import AccessRange, AccessToken
+from oauth2app.models import AccessRange, AccessToken, Client
 import apps.oauth2
 from django.contrib.auth.decorators import login_required
 
@@ -46,12 +46,22 @@ def insert_pds(profile, token, pds_json):
 	raise Exception(ex)
     return response
 
+
 @login_required
 def install_journal(request):
     #request.user
     scope = AccessRange.objects.get(key="funf_write")
     access_tokens = AccessToken.objects.filter(user=request.user, scope=scope)
-    access_token = access_tokens[0]
+    access_token = None
+    try:
+        access_token = access_tokens[0]
+    except:
+        funf_client = Client.objects.get(name="Funf Journal")
+        scope = AccessRange.objects.filter(key="funf_write")
+        access_token = AccessToken(client=funf_client, user=request.user)
+        access_token.save()
+        access_token.scope = scope
+
     host = request.get_host()
     path = "/connectors/funf/journal"
     template = {'bearer_token': access_token.token, 'host': host, 'path': path}
