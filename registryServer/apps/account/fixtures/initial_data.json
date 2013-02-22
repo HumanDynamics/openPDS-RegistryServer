@@ -32,6 +32,14 @@
     }
   },
   {
+    "pk": 5,
+    "model": "oauth2app.accessrange",
+    "fields": {
+      "description": "Needed for making callbacks to the authorization server for token introspection.  This is a temporary work around until somthing like the OpenID Connect token introspection is implemented http://tools.ietf.org/id/draft-richer-oauth-introspection",
+      "key": "trustframework"
+    }
+  },
+  {
     "pk": 1,
     "model": "oauth2app.client",
     "fields": {

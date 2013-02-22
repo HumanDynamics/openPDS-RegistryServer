@@ -8,13 +8,14 @@ from oauth2app.models import Client, AccessToken, AccessRange
 from django.contrib.auth.decorators import login_required
 from django import forms
 from apps.account.models import Profile
+#import sys;sys.path.append(r'/home/jschmitz/git/pydev/pysrc/')
 
 class LocationForm(forms.Form):
     location = forms.CharField()
 
 @login_required
 def homepage(request):
-
+#    import pydevd;pydevd.settrace('127.0.0.1',port=5678)
     template = {}
 
     if request.user.is_authenticated():
@@ -37,6 +38,7 @@ def homepage(request):
 
 	    new_profile.pds_ip = new_location[0]
 	    new_profile.pds_port = new_location[1]
+	    new_profile.save()
 
         clients = Client.objects.filter(user=request.user)
         access_tokens = AccessToken.objects.filter(user=request.user).select_related()

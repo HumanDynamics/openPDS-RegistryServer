@@ -17,6 +17,8 @@ import os
 import sys
 import site
 
+import sys;sys.path.append(r'/home/jschmitz/git/pydev/pysrc/')
+
 django.conf.ENVIRONMENT_VARIABLE = "DJANGO_REGISTRY_SETTINGS_MODULE"
 
 os.environ.setdefault("DJANGO_REGISTRY_SETTINGS_MODULE", "registryServer.settings")
