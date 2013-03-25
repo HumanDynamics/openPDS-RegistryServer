@@ -1,5 +1,5 @@
 # XXX add specific version numbers once we can confirm the latest stable versions all work
-django
+django==1.4.2
 pymongo
 # XXX - re-enable once we make postgresql / mysql an developer-defined detail
 #psycopg2

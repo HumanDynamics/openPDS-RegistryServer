@@ -16,17 +16,17 @@ import uuid
 
 class Profile(models.Model):
   user = models.ForeignKey(User, unique=True)
-  group = models.ForeignKey('Group', blank=True, null=True)
-#  pds_location = models.URLField(max_length=100, default=str(settings.pdsDefault))
-  pds_ip = models.GenericIPAddressField(default=str(settings.pdsDefaultIP))
-  pds_port = models.PositiveIntegerField(default=str(settings.pdsDefaultPort))
+#  group = models.ForeignKey('Group', blank=True, null=True)
+  pds_location = models.URLField(max_length=100, default=str(settings.pdsDefaultLocation))
+#  pds_ip = models.GenericIPAddressField(default=str(settings.pdsDefaultIP))
+#  pds_port = models.PositiveIntegerField(default=str(settings.pdsDefaultPort))
   funf_password = models.CharField(max_length=100, default="changeme")
 #  pds_client = models.ForeignKey(Client, unique=True)
   uuid = models.CharField(max_length=36, unique=True, default=uuid.uuid4)
   def __unicode__(self):
     return self.user.username
   def set_default_client(self):
-    new_client = Client(name=self.user.username+"_pds", user=self.user, description="user "+self.user.username+"'s Personal Data Store", redirect_uri="http://"+self.pds_ip+":"+self.pds_port+"/?username="+self.user.username)
+    new_client = Client(name=self.user.username+"_pds", user=self.user, description="user "+self.user.username+"'s Personal Data Store", redirect_uri="http://"+self.pds_location + "/?username="+self.user.username)
     new_client.save()
 #    self.pds_client = new_client
      

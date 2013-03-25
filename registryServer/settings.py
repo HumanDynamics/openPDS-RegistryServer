@@ -1,8 +1,9 @@
 # XXX - bring back default comments to this file...
 import os
 
+pdsDefaultLocation = "linkedpersonaldata.org:8004"
 pdsDefaultIP = "127.0.0.1"
-pdsDefaultPort = "8031"
+pdsDefaultPort = "8004"
 SERVER_UPLOAD_DIR = '/var/www/trustframework/'
 
 PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -21,8 +22,8 @@ DATABASES = {
         # supported db backends are 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'
         #'ENGINE': 'django.db.backends.mysql', 
         'ENGINE': 'django.db.backends.sqlite3', 
-#        'NAME': '/var/www/trustframework/test.db',      
-        'NAME': 'test.db',      
+        'NAME': '/var/www/trustframework/registryEnv/OMS-RegistryServer/test.db',      
+        #'NAME': 'test.db',      
         'USER': 'test',      
         'PASSWORD': 'test',  
         'HOST': '',      

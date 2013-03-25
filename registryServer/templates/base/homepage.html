@@ -8,9 +8,9 @@
 <div class="content_container">
 	<h3>Welcome {{ profile.user.username }}!</h3>
 	{% if isup %}
-                <div>Your currently hava a PDS up at location : {{ profile.pds_ip }}:{{ profile.pds_port }}</div></br>
+                <div>Your currently hava a PDS up at location : {{ profile.pds_location }}</div></br>
         {% else %}
-                <div style="background-color:red">The registry server failed to identify a PDS at {{ profile.pds_ip }}:{{ profile.pds_port }}!!</div>
+                <div style="background-color:red">The registry server failed to identify a PDS at {{ profile.pds_location }}!!</div>
                 <form name="input" action="" method="get">
                 New Location: <input type="text" name="location">
                 <input type="submit" value="Submit">

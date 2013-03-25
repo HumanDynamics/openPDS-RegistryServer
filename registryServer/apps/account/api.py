@@ -42,7 +42,7 @@ class ScopeResource(ModelResource):
 
 class ProfileResource(ModelResource):
     user = fields.ForeignKey(UserResource, 'user', full=True)
-    group = fields.ForeignKey(GroupResource, 'group', full=True, null=True, blank=True)
+#    group = fields.ForeignKey(GroupResource, 'group', full=True, null=True, blank=True)
 #    client = fields.ForeignKey(ClientResource, 'client', full=True, null=True, blank=True)
 
     class Meta:

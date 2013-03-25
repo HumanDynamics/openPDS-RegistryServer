@@ -26,7 +26,7 @@ def homepage(request):
 	    new_profile = Profile()
 	    new_profile.user = request.user
 	
-	    new_client = Client(name=request.user.username+"_pds", user=request.user, description="user "+request.user.username+"'s Personal Data Store", redirect_uri="http://"+new_profile.pds_ip+":"+new_profile.pds_port+"/?username="+request.user.username)
+	    new_client = Client(name=request.user.username+"_pds", user=request.user, description="user "+request.user.username+"'s Personal Data Store", redirect_uri="http://"+new_profile.pds_location+"/?username="+request.user.username)
 	    new_client.save()
 	    new_profile.pds_client = new_client
 	    new_profile.save()
@@ -60,7 +60,7 @@ def is_pds_up(profile):
 #    pds_location = profile.pds_location
 
     try:
-	path = str(profile.pds_ip)+":"+str(profile.pds_port)
+	path = str(profile.pds_location)#str(profile.pds_ip)+":"+str(profile.pds_port)
 	print path
         conn = httplib.HTTPConnection(path, timeout=2.5)
         request_path="/discovery/ping"
