@@ -45,6 +45,8 @@ def logout(request):
         {}, 
         RequestContext(request))
 
+@login_required
+@staff_member_required
 def profiles(request): 
     return render_to_response(
         'account/profiles.html',
