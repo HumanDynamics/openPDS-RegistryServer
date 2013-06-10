@@ -49,7 +49,7 @@ $(function () {
         },
 
         valueFromElement: function (el) {
-            if (el.type == 'checkbox') {
+            if (el[0].type == 'checkbox') {
                 return el.is(':checked');
             }
 

@@ -1,5 +1,6 @@
 #-*- coding: utf-8 -*-
 import json, ast
+from base64 import b64encode
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect, HttpResponse
 from django.template import RequestContext
@@ -7,8 +8,9 @@ from uni_form.helpers import FormHelper, Submit, Reset
 from django.contrib.auth.decorators import login_required
 from oauth2app.authorize import Authorizer, MissingRedirectURI, AuthorizationException
 from oauth2app.authorize import UnvalidatedRequest, UnauthenticatedUser
+from oauth2app.token import InvalidClient
 from apps.oauth2.forms import AuthorizeForm
-from oauth2app.models import AccessRange
+from oauth2app.models import AccessRange, Client, AccessToken
 from oauth2app.authenticate import Authenticator, AuthenticationException, JSONAuthenticator
 
 
@@ -37,6 +39,38 @@ def userinfo(request):
     response_dict['pds_location'] = 'http://'+str(profile.pds_ip)+":"+str(profile.pds_port)
 
     return HttpResponse(json.dumps(response_dict), content_type='application/json')
+
+def revoke(request):
+    token = request.GET["token"]
+    try:
+        access_token = AccessToken.objects.get(token = token)
+    except Exception:
+        try:
+            access_token = Accesstoken.objects.get(refresh_token = token)
+        except Exception:
+            return HttpResponse("{ \"error\": \"invalid_token\"}", content_type="application/json", status = 400)
+    try:
+        _validate_access_credentials(request, access_token.client)
+    except InvalidClient as ex:
+        return HttpResponse("", status=401)
+
+    access_token.delete()
+    
+    return HttpResponse("", status=200)
+
+def _validate_access_credentials(request, client):
+    """Validate the request's access credentials."""
+    if "HTTP_AUTHORIZATION" in request.META:
+        authorization = request.META["HTTP_AUTHORIZATION"]
+        auth_type, auth_value = authorization.split()[0:2]
+        if auth_type.lower() == "basic":
+            credentials = "%s:%s" % (client.key, client.secret)
+            if auth_value != b64encode(credentials):
+                raise InvalidClient('Client authentication failed.')
+        else:
+            raise InvalidClient('Client authentication failed.')
+    else:
+        raise InvalidClient('Client basic authentication failed.')
 
 
 @login_required
