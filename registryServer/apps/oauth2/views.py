@@ -52,11 +52,11 @@ def revoke(request):
     try:
         _validate_access_credentials(request, access_token.client)
     except InvalidClient as ex:
-        return HttpResponse("", status=401)
+        return HttpResponse("{ \"error\": \"invalid_client\"}", content_type="application/json", status=401)
 
     access_token.delete()
     
-    return HttpResponse("", status=200)
+    return HttpResponse(" {\"success\": \"token_revoked_successfully\"}", status=200)
 
 def _validate_access_credentials(request, client):
     """Validate the request's access credentials."""

@@ -8,9 +8,9 @@
 <div class="content_container">
 	<h3>Welcome {{ profile.user.username }}!</h3>
 	{% if isup %}
-                <div>You currently hava a PDS up at location : {{ profile.pds_ip }}:{{ profile.pds_port }}</div></br>
+                <div>You currently have a PDS up at location : {{ profile.pds_ip }}:{{ profile.pds_port }}</div></br>
         {% else %}
-                <div style="background-color:red">The registry server failed to identify a PDS at {{ profile.pds_ip }}:{{ profile.pds_port }}!!</div>
+                <div style="background-color:red">The registry server failed to identify a PDS at {{ profile.pds_location }}!!</div>
                 <form name="input" action="" method="get">
                 New Location: <input type="text" name="location">
                 <input type="submit" value="Submit">
@@ -23,11 +23,12 @@
 			<p>You are an administrator. Go to the <a href="/account/profiles">Profile Page</a> to create and edit users.</p>
 		{% endif %}
 
-		<a class="btn btn-primary btn-large" href="http://{{ profile.pds_ip }}:{{ profile.pds_port }}/api/personal_data/funf/?format=json&datastore_owner__uuid={{ profile.uuid }}&bearer_token=dummy">
-      View Funf Data
+    {% if access_tokens %}
+
+		<a class="btn btn-primary btn-large" href="http://{{ profile.pds_ip }}:{{ profile.pds_port }}/api/personal_data/generic/?format=json&datastore_owner__uuid={{ profile.uuid }}&bearer_token={{ access_tokens.0.token }}">
+      View Data
 	        </a>
 	
-	{% if access_tokens %}
 	<p>You have issued the following access tokens.</p>
 	<table class="data">
 			<tr>

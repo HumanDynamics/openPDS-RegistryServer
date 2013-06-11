@@ -1,9 +1,9 @@
 # XXX - bring back default comments to this file...
 import os
 
-pdsDefaultIP = "127.0.0.1"
-pdsDefaultPort = "8031"
-SERVER_UPLOAD_DIR = '/var/www/trustframework4/'
+pdsDefaultIP = "ec2-23-22-28-14.compute-1.amazonaws.com"
+pdsDefaultPort = "8002"
+SERVER_UPLOAD_DIR = '/home/ubuntu/TrustFramework/'
 
 PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
 

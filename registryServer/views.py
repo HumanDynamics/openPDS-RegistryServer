@@ -1,27 +1,15 @@
 #-*- coding: utf-8 -*-
 from django.shortcuts import render_to_response, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
-import urllib
-import urllib2
-import hashlib
-import datetime
-import requests
-
+import urllib, urllib2, hashlib, datetime, requests, httplib, logging, settings, pymongo, json, ast
 from oauth2app.authenticate import JSONAuthenticator, AuthenticationException, Authenticator, InsufficientScope
 from oauth2app.models import AccessRange, AccessToken
 from django.contrib.auth.decorators import login_required
 from apps.account.models import UserToUser, User, Profile
 from django.http import HttpResponse
-import urllib2
-import httplib
-import logging
 #from simplejson import dumps
-import pymongo 
 from pymongo import Connection
 from bson import json_util
-import json, ast
-import settings
-
 
 def isup(request):
     response = {"success":True}
