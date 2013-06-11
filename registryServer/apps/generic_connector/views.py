@@ -41,7 +41,6 @@ def data(request):
         template = {'token':request.GET['bearer_token']}
         return render_to_response('upload.html', template, RequestContext(request))
 
-    pds = None
     scope = AccessRange.objects.get(key="funf_write")
     authenticator = JSONAuthenticator(scope=scope)
     try:
