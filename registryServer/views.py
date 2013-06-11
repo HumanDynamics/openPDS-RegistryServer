@@ -71,7 +71,7 @@ def get_key_from_token(request):
             response_content['request_type'] = "self"
             #a request from self (host=guest)
             response_content['key']=authenticator.user.get_profile().uuid
-            response_content['pds_location']=authenticator.user.get_profile().pds_location
+            response_content['pds_location']=authenticator.user.get_profile().pds_ip
             response_content['status']="success"
             response_content['client']=client
             response_content['scopes']=scope_list
