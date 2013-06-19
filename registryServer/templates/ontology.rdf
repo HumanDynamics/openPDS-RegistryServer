@@ -1,0 +1,78 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:lpd="http://linkedpersonaldata.org/ontology#"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/">
+    <owl:Ontology rdf:about="http://linkedpersonaldata.org/ontology">
+        <dc:title>The LinkedPersonalData.org ontology</dc:title>
+        <dc:description>An ontology describing metrics derived from personal data.</dc:description>
+    </owl:Ontology>
+    <owl:Class rdf:about="http://linkedpersonaldata.org/ontology#PersonalDataAccount">
+        <rdfs:label>Class representing a user's personal data store</rdfs:label>
+        <rdfs:subclassOf rdf:resource="http://xmlns.com/foaf/o.1/OnlineAccount" />
+    </owl:Class>
+    <owl:ObjectProperty rdf:about="http://linkedpersonaldata.org/ontology#sparqlEndpoint">
+        <rdfs:label>Location of a sparql endpoint to query for the user's data</rdfs:label>
+        <rdfs:domain rdf:resource="http://linkedpersonaldata.org/ontology#PersonalDataAccount" />
+    </owl:ObjectProperty>
+    <owl:Class rdf:about="http://linkedpersonaldata.org/ontology#SocialHealthScore">
+        <rdfs:label>Score for a social health metric</rdfs:label>
+    </owl:Class>
+    <lpd:SocialHealthScore rdf:about="http://linkedpersonaldata.org/ontology#none">
+        <rdfs:label>None</rdfs:label>
+    </lpd:SocialHealthScore>
+    <lpd:SocialHealthScore rdf:about="http://linkedpersonaldata.org/ontology#low">
+        <rdfs:label>Low</rdfs:label>
+    </lpd:SocialHealthScore>
+    <lpd:SocialHealthScore rdf:about="http://linkedpersonaldata.org/ontology#average">
+        <rdfs:label>Average</rdfs:label>
+    </lpd:SocialHealthScore>
+    <lpd:SocialHealthScore rdf:about="http://linkedpersonaldata.org/ontology#high">
+        <rdfs:label>High</rdfs:label>
+    </lpd:SocialHealthScore>
+    <owl:DatatypeProperty rdf:about="http://linkedpersonaldata.org/ontology#socialHealthMetric">
+        <rdfs:label>Parent class for metrics to measure a person's social health</rdfs:label>
+        <rdfs:domain rdf:resource="http://xmlns.com/foaf/0.1/Person" />
+        <rdfs:range rdf:resource="http://linkedpersonaldata.org/ontology#SocialHealthScore" />
+    </owl:DatatypeProperty>
+    <owl:ObjectProperty rdf:about="http://linkedpersonaldata.org/ontology#recentActivityLevel">
+        <rdfs:label>Recent physical activity level</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://linkedpersonaldata.org/ontology#socialHealthMetric" />
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="http://linkedpersonaldata.org/ontology#recentSocialLevel">
+        <rdfs:label>Recent socialability level</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://linkedpersonaldata.org/ontology#socialHealthMetric" />
+    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="http://linkedpersonaldata.org/ontology#recentFocusLevel">
+        <rdfs:label>Recent focus level</rdfs:label>
+        <rdfs:subPropertyOf rdf:resource="http://linkedpersonaldata.org/ontology#socialHealthMetric" />
+    </owl:ObjectProperty>
+    <owl:Class rdf:about="http://linkedpersonaldata.org/ontology#Suggestion">
+        <rdfs:label>Class representing a personalized suggestion based on a person's behavior</rdfs:label>
+    </owl:Class>
+    <owl:ObjectProperty rdf:about="http://linkedpersonaldata.org/ontology#hasSuggestion">
+        <rdfs:label>has personalized suggestion</rdfs:label>
+        <rdfs:domain rdf:resource="http://xmlns.com/foaf/0.1/Person" />
+        <rdfs:range rdf:resource="http://linkedpersonaldata.org/ontology#Suggestion" />
+    </owl:ObjectProperty>
+    <owl:Class rdf:about="http://linkedpersonaldata.org/ontology#Reason">
+        <rdfs:label>Class representing a reason for a personalized suggestion</rdfs:label>
+    </owl:Class>
+    <lpd:Reason rdf:about="http://linkedpersonaldata.org/ontology#nearWork">
+        <rdfs:label>Near work</rdfs:label>
+    </lpd:Reason>
+    <lpd:Reason rdf:about="http://linkedpersonaldata.org/ontology#nearHome">
+        <rdfs:label>Near home</rdfs:label>
+    </lpd:Reason>
+    <owl:Property rdf:about="http://linkedpersonaldata.org/ontology#reason">
+        <rdfs:label>reason for suggestion</rdfs:label>
+        <rdfs:domain rdf:resource="http://linkedpersonaldata.org/ontology#Suggestion" />
+        <rdfs:range rdf:resource="http://linkedpersonaldata.org/ontology#Reason" />
+    </owl:Property>
+    <owl:Class rdf:about="http://linkedpersonaldata.org/ontology#SuggestedPlace">
+        <owl:subclassOf rdf:resource="http://linkedpersonaldata.org/ontology#Suggestion" />
+    </owl:Class>
+    
+</rdf:RDF>

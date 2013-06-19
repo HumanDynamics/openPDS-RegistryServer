@@ -21,6 +21,7 @@ from pymongo import Connection
 from bson import json_util
 import json, ast
 import settings
+from django.shortcuts import render_to_response
 
 
 def isup(request):
@@ -30,6 +31,12 @@ def isup(request):
 def js(request):
     response = {"success":True}
     return render_to_response('javascript/test.js' )
+
+def members(request):
+    profiles = Profile.objects.all()
+    
+    template = { "profiles": profiles }
+    return render_to_response("members.rdf", template, mimetype="application/rdf+xml")
 
 def get_key_from_token(request):
     response_content = {}
@@ -49,7 +56,7 @@ def get_key_from_token(request):
             response_content['request_type'] = "self"
             #a request from self (host=guest)
             response_content['key']=authenticator.user.get_profile().uuid
-            response_content['pds_location']=authenticator.user.get_profile().pds_ip
+            response_content['pds_location']=authenticator.user.get_profile().pds_location
             response_content['status']="success"
     except Exception as e:
         response_content['status']="error"

@@ -33,49 +33,24 @@ import apps.oauth2
 from django.contrib.auth.decorators import login_required
 
 import pdb
+import traceback
 
 upload_dir = settings.SERVER_UPLOAD_DIR
 
 def insert_pds(profile, token, pds_json):
     try:
+	#print "Attempting to post to PDS"
         # get pds location and user id
-	request_path= "http://"+str(profile.pds_ip)+":"+str(profile.pds_port)+"/api/personal_data/funf/?format=json&bearer_token="+str(token)+"&datastore_owner__uuid="+str(profile.uuid)
+	request_path= "http://"+str(profile.pds_location)+"/api/personal_data/funf/?format=json&bearer_token="+str(token)+"&datastore_owner__uuid="+str(profile.uuid)
 	payload = json.dumps(pds_json)
-	r = requests.post(request_path, data=payload)
+	r = requests.post(request_path, data=payload, headers= { "content-type": "application/json" })
 	response = r.text
-
+	#print "PDS POST response:"
+	#print response
     except Exception as ex:
+	#print ex
 	raise Exception(ex)
     return response
-
-@login_required
-def install_journal(request):
-    #request.user
-    scope = AccessRange.objects.get(key="funf_write")
-    access_tokens = AccessToken.objects.filter(user=request.user, scope=scope)
-    access_token = access_tokens[0]
-    host = request.get_host()
-    path = "/connectors/funf/journal"
-    template = {'bearer_token': access_token.token, 'host': host, 'path': path}
-
-    return render_to_response('funf/install_journal.html', template, RequestContext(request))
-
-def journal(request):
-    '''used for funf journal integration.  This should be called from "link with server" from the funf journal application'''
-    bearer_token = None
-    print request.GET.__contains__('bearer_token')
-    if request.GET.__contains__('bearer_token'):
-        bearer_token = request.GET.get('bearer_token')
-    else:
-        return redirect('/connectors/funf/install_journal')
-        
-    config_uri = request.build_absolute_uri()
-    upload_host = "http://"+request.get_host()
-    upload_path = "/connectors/funf/set_funf_data"
-    template = {'config_uri':config_uri, 'upload_host': upload_host, 'upload_path': upload_path, 'bearer_token': bearer_token}
-    print template
-    return render_to_response('funf/config.json', template, RequestContext(request))
-    
 
 def write_key(request):
     '''write the password used to encrypt funf database files to your PDS'''
@@ -107,11 +82,10 @@ def data(request):
     '''decrypt funf database files, and upload them to your PDS'''
     result = {}
     connection = None
+    token = request.GET['bearer_token']
 
-    for filename, file in request.FILES.items():
-        logging.debug(filename)
     if request.method == 'GET':
-        template = {'token':request.GET['bearer_token']}
+        template = {'token': token}
         return render_to_response('upload.html', template, RequestContext(request))
     pds = None
     scope = AccessRange.objects.get(key="funf_write")
@@ -124,43 +98,46 @@ def data(request):
         print e
         return authenticator.error_response(content="You didn't authenticate.")
     profile = authenticator.user.get_profile()
-    funf_password = profile.funf_password	
+    funf_password = profile.funf_password
+    print "Registry set_funf_data for uuid: %s" % profile.uuid
 
-    try:
-        scope = 'funf_write'
-        token = request.GET['bearer_token']
+    for filename, file in request.FILES.items():
         try:
-            key = decrypt.key_from_password(str(funf_password))
             file_path = upload_dir + file.name
-            write_file(str(file_path), file)
-        except Exception as ex:
-            print "failed to write file to "+file_path+".  Please make sure you have write permission to the directory set in settings.SERVER_UPLOAD_DIR"
-        dbdecrypt.decrypt_if_not_db_file(file_path, key)
-        con = sqlite3.connect(file_path)
-        cur = con.cursor()
-        cur.execute("select name, value from data")
-        inserted = []
-        for row in cur:
-            name = clean_keys(convert_string(row["name"]))
-            json_insert = clean_keys(json.JSONDecoder().decode(convert_string(row["value"])))
-            print json_insert
-            # Insert into PDS
-            pds_data= {}
-            pds_data['time']=json_insert.get('timestamp')
-            pds_data['value']=json_insert
-            pds_data['key']=name
-            insert_pds(profile, token, pds_data)
-            print "inserting row..."
-            print pds_data
-            inserted.append(convert_string(json_insert)+'\n')
-        result = {'success': True, 'message':''.join(inserted)} 
-    except Exception as e:
-        result = {'success':False, 'error_message':e.message}
-    finally:
-        response_dict = {"status":"success"}
-        return HttpResponse(json.dumps(response_dict), content_type='application/json')
+            try:
+                key = decrypt.key_from_password(str(funf_password))
+                write_file(str(file_path), file)
+            except Exception as ex:
+                print "failed to write file to "+file_path+".  Please make sure you have write permission to the directory set in settings.SERVER_UPLOAD_DIR"
+            dbdecrypt.decrypt_if_not_db_file(file_path, key)
+            con = sqlite3.connect(file_path)
+            cur = con.cursor()
+            cur.execute("select name, value from data")
+            inserted = []
+            for row in cur:
+                name = convert_string(row[0])
+                json_insert = clean_keys(json.JSONDecoder().decode(convert_string(row[1])))
+                #print json_insert
+                # Insert into PDS
+                pds_data= {}
+                pds_data['time']=json_insert.get('timestamp')
+                pds_data['value']=json_insert
+                pds_data['key']=name
+                insert_pds(profile, token, pds_data)
+                #print "inserting row..."
+                #print pds_data
+                inserted.append(convert_string(json_insert)+'\n')
+            result = {'success': True, 'message':''.join(inserted)} 
+            #remove_file(file_path)
+        except Exception as e:
+            print e.message
+            print traceback.format_exc()
+            result = {'success':False, 'error_message':e.message}
+    # It doesn't matter what we return at this point - the phones are just checking the response status
+    response_dict = {"status":"success"}
+    return HttpResponse(json.dumps(response_dict), content_type='application/json')
 
-    
+
 TMP_FILE_SALT = '2l;3edF34t34$#%2fruigduy23@%^thfud234!FG%@#620k'
 TEMP_DATA_LOCATION = "/data/temp/"
 
@@ -190,6 +167,13 @@ def write_file(filename, file):
             if not chunk:
                 break
             output_file.write(chunk)
+
+def remove_file(filename):
+    filepath = os.path.join(upload_dir, filename)
+    print "filepath: %s" % filepath
+    if os.path.exists(filepath):
+        print "... exists!"
+        os.remove(filepath)
 
 def backup_file(filepath):
     shutil.move(filepath, filepath + '.' + str(int(time.time()*1000)) + '.bak')

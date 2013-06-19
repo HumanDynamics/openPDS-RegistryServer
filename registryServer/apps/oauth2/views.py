@@ -34,7 +34,7 @@ def userinfo(request):
     response_dict['id'] = profile.uuid
     response_dict['email'] = profile.user.email
     response_dict['name'] = profile.user.username
-    response_dict['pds_location'] = 'http://'+str(profile.pds_ip)+":"+str(profile.pds_port)
+    response_dict['pds_location'] = 'http://'+str(profile.pds_location)
 
     return HttpResponse(json.dumps(response_dict), content_type='application/json')
 

@@ -66,7 +66,7 @@ def signup(request):
         if form.is_valid():
             user = User.objects.create_user(
                     form.cleaned_data["username"],
-                    form.cleaned_data["email"],
+                    form.cleaned_data["username"],
                     form.cleaned_data["password1"],)
             profile = Profile.objects.create(user=user)
             user = auth.authenticate(

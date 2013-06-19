@@ -1,21 +1,26 @@
 # XXX - bring back default comments to this file...
 import os
 
-pdsDefaultLocation = "linkedpersonaldata.org:8004"
-pdsDefaultIP = "127.0.0.1"
-pdsDefaultPort = "8004"
+pdsDefaultLocation = "pds.linkedpersonaldata.org"
 SERVER_UPLOAD_DIR = '/var/www/trustframework/'
 
 PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
+    ('Brian Sweatt', 'brian717ErrorReport@gmail.com'),
 )
 
 MANAGERS = ADMINS
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'brian717ErrorReport@gmail.com'
+EMAIL_HOST_PASSWORD = 'P@SSw0rd'
+EMAIL_PORT = 587
+
 
 DATABASES = {
     'default': {

@@ -44,7 +44,7 @@ class ClientRemoveForm(forms.Form):
 
 class SignupForm(UserCreationForm):
     
-    email = forms.EmailField(label="Email")
+    username = forms.EmailField(label="Email")
     
     @property
     def helper(self):

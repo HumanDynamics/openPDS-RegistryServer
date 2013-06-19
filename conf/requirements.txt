@@ -9,7 +9,7 @@ django-uni-form
 django-tastypie==0.9.11
 mongoengine
 requests
-
+django-4store
 
 
 # oauth2app

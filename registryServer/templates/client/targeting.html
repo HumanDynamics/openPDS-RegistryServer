@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<form action="targeting" method="post" data-ajax="false">
+
+<h1>Send an offer</h1>
+<div><label for="offerTitle">Your offer:</label><input type="text" id="offerTitle" name="offerTitle"></div>
+<div><label for="offerUri">Your LinkedGeoData URI:</label><input type="text" id="offerUri" name="offerUri"></div>
+<h1>Targeted at</h1>
+<h2>Users matching the following criteria who might be interested in my offer:</h2>
+<h3>Social Health</h3>
+<div>
+    {% for metric in socialHealthMetrics %}
+        <label for="{{ metric.id }}">{{ metric.title }}:</label>
+        <select id="{{ metric.id }}" name="{{ metric.id }}">
+        {% for option in healthMetricValues %}
+            <option value="{{ option.value|default:'' }}">{{ option.name|default:"Doesn't matter" }}</option>
+        {% endfor %}
+        </select>
+    {% endfor %}
+</div>
+<h3>Musical Tastes</h3>
+<div>
+    <label for="genre">Genre</label>
+    <select id="genre" name="genre">
+        {% for genre in genres %}
+        <option value="{{ genre.uri|default:"" }}">{{ genre.name|default:"Doesn't matter" }}</option>
+        {% endfor %}
+    </select>
+</div>
+{% if query %}
+The following query was run:
+<textarea name="query" id="query" cols ="70" rows="30">{{ query }}</textarea>
+{% endif %}
+
+<input type="submit" value="Send Offer" />
+</form>
+
+{% endblock %}
+

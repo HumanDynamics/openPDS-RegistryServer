@@ -1,60 +1,61 @@
 {% extends "layout.html" %}
 
-{% block title %}Reality Analysis Trust Framework{% endblock %}
-
+{% block title %}Home{% endblock %}
+{% block header %}
+    <div class="marquee">
+        <div>Collect your data</div>
+        <div>Use your data</div>
+        <div>Control your data</div>
+    </div>
+{% endblock %}
 {% block content %}
-
-<h1>Linked Personal Data</h1>
 <div class="content_container">
-	<h3>Welcome {{ profile.user.username }}!</h3>
-	{% if isup %}
-                <div>You currently have a PDS up at location : {{ profile.pds_location }}</div></br>
-        {% else %}
-                <div style="background-color:red">The registry server failed to identify a PDS at {{ profile.pds_location }}!!</div>
-                <form name="input" action="" method="get">
-                New Location: <input type="text" name="location">
-                <input type="submit" value="Submit">
-                </form></br>
-        {% endif %}
 
 	{% if request.user.is_authenticated %}
-		
+		<h3>Welcome {{ profile.user.username }}!</h3>
+
+		{% if isup %}
+                	<div>Your personal data store is located here: {{ profile.pds_location }}</div><br />
+        	{% else %}
+	                <div style="background-color:red">Sorry, we are unable to reach the personal data store at: {{ profile.pds_location }}</div>
+	                <form name="input" action="" method="get">
+	                New Location: <input type="text" name="location">
+	                <input type="submit" value="Submit">
+	                </form><br />
+	        {% endif %}
+	
 		{% if request.user.is_staff %}
 			<p>You are an administrator. Go to the <a href="/account/profiles">Profile Page</a> to create and edit users.</p>
 		{% endif %}
-		<a href="/static/RealityAnalysis.apk" rel="external">Click here to download the RealityAnalysis app.</a>
-
-		<a class="btn btn-primary btn-large" href="http://{{ profile.pds_location }}/api/personal_data/funf/?format=json&datastore_owner={{ profile.uuid }}&bearer_token=dummy">
-      View Funf Data
-	        </a>
-	
-	{% if access_tokens %}
-	<p>You have issued the following access tokens.</p>
-	<table class="data">
-			<tr>
-				<th>Client name</th>
-				<th>Scope</th>
-			</tr>
-		{% for access_token in access_tokens %}
-			<tr>
-				<td><a href="/client/{{ access_token.client.key }}">{{ access_token.client.name }}</a></td>
-				<td>
-					{% if access_token.scope.all|length == 0 %}
-						<em>No scope</em>
-					{% endif %}
-					{% for access_range in access_token.scope.all %}
-						{{ access_range.key }}
-					{% endfor %}
-				</td>
-			</tr>		
-		{% endfor %}
-	</table>
+<!--		<a href="/static/RealityAnalysis.apk" rel="external">Click here to download the RealityAnalysis app.</a>-->
+     
+    		<a class="btn btn-primary btn-large" href="http://{{ profile.pds_location }}/api/personal_data/funf/?format=json&datastore_owner__uuid={{ profile.uuid }}&bearer_token={{ access_token }}">View your personal data.</a>
+       
 	{% else %}
-	<p>You have no access_tokens. Authorize a client to create one.</p>
-	{% endif %}	
+		<div id="info">
+			<h2>What is it?</h2>
+			<p>LinkedPersonalData.org is a place for people to register their personal data, and discover ways to use it to empower their lives. By providing a registry of personal data, an onotology to describe this data, and a means to link this across other data sets, LinkedPersonalData.org aims to give the power of personal data back to those who created it, rather than companies that collect it. Through our registry of users, we have an ever-growing corpus of personal data that can provide insight into human and social behaviors. Will you be the next one to empower your life through your own personal data, and add to the growing knowledge we have of human behavior?</p>
+		</div>
+		<div id="philosophy">
+			<h2>Our Philosophy</h2>
+			<p>You created your personal data - whether it was by filling out a form, wearing a quantified-self device, or running one of the many mobile applications available today that collect information about you, including call logs, your location, and your contacts. At LinkedPersonalData.org, we believe:
+			<ol>
+				<li>This data belongs to you</li>
+				<li>You should know where it lives</li>
+				<li>You should know how it is used</li>
+				<li>You should be able to use all of it across all of your apps and sites</li>
+			</ol>
+			Unfortunately, the status-quo has many applications collecting your personal data, with strict terms of service that essentially hand over ownership to the company collecting it in exchange for the service they are providing. Additionally, there is seldom any mention of how they are really using your data, and where they are housing it - there is typically not even a link to view the data these services have on you. Finally, all of these applications store their data separately and thus, no one application has access to all of your data. Your music app can't use the data from your excercise app to help determine the perfect song to play, and your mapping application can't use data from your social networking application to help determine what restaurants your friends like. If you knew where all of your data lived, and could provide access to all of it accross applications, these applications could potentially do even more for you.
+			</p>
+		</div>
 	{% endif %}
+    <div id="contribute">
+        <h2>How to Contribute</h2>
+        <p>We believe contributing should be easy, and should also have some benefit for you. There are currently two ways to contribute to the Linked Personal Data data sets. Using our Social Health Tracker or Assistant apps, which are both available on the Google Play Store. In the near future, we plan to make it even easier to contribute by providing more useful apps to you, as well as a means for more advanced users to contribute self-assessed personal profile data.</p>
+<div>        <a href="https://play.google.com/store/apps/details?id=org.linkedpersonaldata.quantifiedself" rel="external">Download the Social Health Tracker app on Google Play</a></div>
+<div>        <a href="https://play.google.com/store/apps/details?id=org.linkedpersonaldata.assistant" rel="external">Download the LinkedPersonalData Assistant app on Google Play</a></div>
+
+    </div>	
 </div>
-
-
 
 {% endblock %}
