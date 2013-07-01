@@ -13,6 +13,8 @@ MIT Trustframework deployment instructions are now up at https://github.com/JDSc
     
     >apt-get install build-essential
     
+    >apt-get install python-dev
+    
     >service mongodb start
     
     >virtualenv pdsrsvirtenv
