@@ -31,4 +31,6 @@ Human Dynamics openPDS-RegistryServer
     
     >cd registryServer
     
+    >./manage.py syncdb
+    
     >python manage.py runserver 0.0.0.0:8001 (for access to local VM)
