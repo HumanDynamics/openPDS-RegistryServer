@@ -1,12 +1,12 @@
 # XXX - bring back default comments to this file...
 import os
 
-pdsDefaultLocation = "pds.linkedpersonaldata.org"
-SERVER_UPLOAD_DIR = '/var/www/trustframework/'
+pdsDefaultLocation = "pds.crowdsos.net"
+SERVER_UPLOAD_DIR = '/var/www/trustframework/crowdsosRegistry/'
 
 PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
 
-DEBUG = False
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -27,10 +27,10 @@ DATABASES = {
         # supported db backends are 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'
         #'ENGINE': 'django.db.backends.mysql', 
         'ENGINE': 'django.db.backends.sqlite3', 
-        'NAME': '/var/www/trustframework/registryEnv/OMS-RegistryServer/test.db',      
+        'NAME': '/var/www/trustframework/crowdsosRegistry/openPDS-RegistryServer/registry.db',      
         #'NAME': 'test.db',      
-        'USER': 'test',      
-        'PASSWORD': 'test',  
+        'USER': 'default',      
+        'PASSWORD': 'default',  
         'HOST': '',      
         'PORT': '',      
 #	'OPTIONS': {
