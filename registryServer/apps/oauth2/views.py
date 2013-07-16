@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from oauth2app.authorize import Authorizer, MissingRedirectURI, AuthorizationException
 from oauth2app.authorize import UnvalidatedRequest, UnauthenticatedUser
 from apps.oauth2.forms import AuthorizeForm
-from apps.oauth2.authorization import CrowdSOSAuthorizer
+from apps.oauth2.authorization import SchemeAgnosticAuthorizer
 from oauth2app.models import AccessRange
 from oauth2app.authenticate import Authenticator, AuthenticationException, JSONAuthenticator
 import pdb
@@ -84,7 +84,7 @@ def authorize(request):
 @login_required
 def grant(request):
     CODE_AND_TOKEN=3
-    authorizer = CrowdSOSAuthorizer(response_type=CODE_AND_TOKEN)
+    authorizer = SchemeAgnosticAuthorizer(response_type=CODE_AND_TOKEN)
     try:
         authorizer.validate(request)
     except MissingRedirectURI as e:
