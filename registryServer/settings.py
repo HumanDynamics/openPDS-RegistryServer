@@ -6,7 +6,7 @@ SERVER_UPLOAD_DIR = '/var/www/trustframework/crowdsosRegistry/'
 
 PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -120,6 +120,8 @@ TEMPLATE_LOADERS = (
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     'django.contrib.auth.context_processors.auth',
+    "allauth.account.context_processors.account",
+    "allauth.socialaccount.context_processors.socialaccount",
 )
 
 # where to look for templates
@@ -143,6 +145,13 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'urls'
 
+AUTHENTICATION_BACKENDS = (
+    # Needed to login by username in Django admin, regardless of `allauth`
+    "django.contrib.auth.backends.ModelBackend",
+    # `allauth` specific authentication methods, such as login by e-mail
+    "allauth.account.auth_backends.AuthenticationBackend",
+)
+
 # Define user profile associated with a User
 AUTH_PROFILE_MODULE = 'account.Profile'
 
@@ -154,6 +163,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.admindocs',
+    'django.contrib.sites',
     'apps.base',
     'apps.client',
     'apps.account',
@@ -163,6 +173,14 @@ INSTALLED_APPS = (
     'oauth2app',
     'django_extensions',
     'lib',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    # ... include the providers you want to enable:
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.twitter',
+    'allauth.socialaccount.providers.openid'
     )
 
 #    'regisryServer.apps.oauth2',

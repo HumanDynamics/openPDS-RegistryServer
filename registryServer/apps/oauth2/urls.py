@@ -6,4 +6,5 @@ urlpatterns = patterns('',
         (r'^authorize/?$',              'apps.oauth2.views.authorize'),
         (r'^token/?$',                  'oauth2app.token.handler'),
         (r'^userinfo/?$',               'apps.oauth2.views.userinfo'),
+        (r'^grant/?$',                  'apps.oauth2.views.grant'),
 )

@@ -8,9 +8,10 @@ from django.contrib.auth.decorators import login_required
 from oauth2app.authorize import Authorizer, MissingRedirectURI, AuthorizationException
 from oauth2app.authorize import UnvalidatedRequest, UnauthenticatedUser
 from apps.oauth2.forms import AuthorizeForm
+from apps.oauth2.authorization import CrowdSOSAuthorizer
 from oauth2app.models import AccessRange
 from oauth2app.authenticate import Authenticator, AuthenticationException, JSONAuthenticator
-
+import pdb
 
 @login_required
 def missing_redirect_uri(request):
@@ -41,6 +42,7 @@ def userinfo(request):
 
 @login_required
 def authorize(request):
+#    pdb.set_trace()
     CODE_AND_TOKEN = 3
     authorizer = Authorizer(response_type=CODE_AND_TOKEN)
     try:
@@ -78,3 +80,18 @@ def authorize(request):
             else:
                 return authorizer.error_redirect()
     return HttpResponseRedirect("/")
+
+@login_required
+def grant(request):
+    CODE_AND_TOKEN=3
+    authorizer = CrowdSOSAuthorizer(response_type=CODE_AND_TOKEN)
+    try:
+        authorizer.validate(request)
+    except MissingRedirectURI as e:
+        print e
+        return HttpResponseRedirect("/oauth2/missing_redirect_uri")
+    except AuthorizationException, e:
+        # The request is malformed or invalid. Automatically 
+        # redirects to the provided redirect URL.
+        return authorizer.error_redirect()
+    return authorizer.grant_redirect()

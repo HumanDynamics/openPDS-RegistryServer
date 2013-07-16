@@ -30,7 +30,8 @@ urlpatterns = patterns('views',
     (r'^get_system_entity_connection$', 'get_system_entity_connection'),
 #    (r"^sparql/$", sparql_proxy, { "sparql_endpoint": "http://linkedpersonaldata.org:8080" }),
     (r'^ontology$', direct_to_template, { "template": "ontology.rdf", "mimetype": "application/rdf+xml" }),
-    (r"^members$", "members" )
+    (r"^members$", "members" ),
+    (r'^accounts/', include('allauth.urls')),
 )
 
 #handler404 = 'oauthManagement.regisryServer.apps.api.views.log_404'
