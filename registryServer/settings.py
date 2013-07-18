@@ -1,25 +1,13 @@
 # XXX - bring back default comments to this file...
 import os
 
-pdsDefaultLocation = "pds.crowdsos.net"
-SERVER_UPLOAD_DIR = '/var/www/trustframework/crowdsosRegistry/'
+pdsDefaultLocation = "default.pds.location.here"
+SERVER_UPLOAD_DIR = '/var/www/trustframework/registryvirtenv/'
 
 PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
-
-ADMINS = (
-    ('Brian Sweatt', 'brian717ErrorReport@gmail.com'),
-)
-
-MANAGERS = ADMINS
-
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'brian717ErrorReport@gmail.com'
-EMAIL_HOST_PASSWORD = 'P@SSw0rd'
-EMAIL_PORT = 587
 
 
 DATABASES = {
@@ -27,7 +15,7 @@ DATABASES = {
         # supported db backends are 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'
         #'ENGINE': 'django.db.backends.mysql', 
         'ENGINE': 'django.db.backends.sqlite3', 
-        'NAME': '/var/www/trustframework/crowdsosRegistry/openPDS-RegistryServer/registry.db',      
+        'NAME': '/var/www/trustframework/registryvirtenv/openPDS-RegistryServer/registry.db',      
         #'NAME': 'test.db',      
         'USER': 'default',      
         'PASSWORD': 'default',  
