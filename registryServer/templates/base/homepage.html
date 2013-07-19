@@ -27,18 +27,17 @@
 		{% if request.user.is_staff %}
 			<p>You are an administrator. Go to the <a href="/account/profiles">Profile Page</a> to create and edit users.</p>
 		{% endif %}
-<!--		<a href="/static/RealityAnalysis.apk" rel="external">Click here to download the RealityAnalysis app.</a>-->
-     
+    
     		<a class="btn btn-primary btn-large" href="http://{{ profile.pds_location }}/api/personal_data/funf/?format=json&datastore_owner__uuid={{ profile.uuid }}&bearer_token={{ access_token }}">View your personal data.</a>
        
 	{% else %}
 		<div id="info">
 			<h2>What is it?</h2>
-			<p>LinkedPersonalData.org is a place for people to register their personal data, and discover ways to use it to empower their lives. By providing a registry of personal data, an onotology to describe this data, and a means to link this across other data sets, LinkedPersonalData.org aims to give the power of personal data back to those who created it, rather than companies that collect it. Through our registry of users, we have an ever-growing corpus of personal data that can provide insight into human and social behaviors. Will you be the next one to empower your life through your own personal data, and add to the growing knowledge we have of human behavior?</p>
+			<p>The openPDS Registry Server contains a registry of users with personal data stores, and provides these users with an OAuth 2.0 service to authorize applications to utilize their PDS.</p>
 		</div>
 		<div id="philosophy">
-			<h2>Our Philosophy</h2>
-			<p>You created your personal data - whether it was by filling out a form, wearing a quantified-self device, or running one of the many mobile applications available today that collect information about you, including call logs, your location, and your contacts. At LinkedPersonalData.org, we believe:
+			<h2>The Philosophy</h2>
+			<p>You created your personal data - whether it was by filling out a form, wearing a quantified-self device, or running one of the many mobile applications available today that collect information about you, including call logs, your location, and your contacts. 
 			<ol>
 				<li>This data belongs to you</li>
 				<li>You should know where it lives</li>
@@ -50,11 +49,8 @@
 		</div>
 	{% endif %}
     <div id="contribute">
-        <h2>How to Contribute</h2>
-        <p>We believe contributing should be easy, and should also have some benefit for you. There are currently two ways to contribute to the Linked Personal Data data sets. Using our Social Health Tracker or Assistant apps, which are both available on the Google Play Store. In the near future, we plan to make it even easier to contribute by providing more useful apps to you, as well as a means for more advanced users to contribute self-assessed personal profile data.</p>
-<div>        <a href="https://play.google.com/store/apps/details?id=org.linkedpersonaldata.quantifiedself" rel="external">Download the Social Health Tracker app on Google Play</a></div>
-<div>        <a href="https://play.google.com/store/apps/details?id=org.linkedpersonaldata.assistant" rel="external">Download the LinkedPersonalData Assistant app on Google Play</a></div>
-
+        <h2>How to Sign Up and Contribute</h2>
+        <p>To contribute, first <a href="/account/signup">signup for an account.</a> To create a client to interface with an openPDS install, or view clients you've previously created, proceed to the <a href="/account/clients">client management page.</a> To use a pre-existing client application, login to the application with the credentials created on the signup page. </p>
     </div>	
 </div>
 
