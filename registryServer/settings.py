@@ -21,7 +21,7 @@ DATABASES = {
         # supported db backends are 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'
         #'ENGINE': 'django.db.backends.mysql', 
         'ENGINE': 'django.db.backends.sqlite3', 
-        'NAME': 'test.db',      
+        'NAME': '/home/openpds/pdsrsvirtenv/openPDS-RegistryServer/registryServer/test.db',      
 #        'NAME': 'test.db',      
         'USER': 'test',      
         'PASSWORD': 'test',  
@@ -63,6 +63,8 @@ USE_L10N = True
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
 
+#PREFIX = '/openpds-rs'
+
 # when auth is required, django will redirect here
 LOGIN_URL = "/account/login"
 
@@ -92,7 +94,7 @@ ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 # Additional locations of static files
 # Don't forget to use absolute paths, not relative paths, and use forward slashes
-STATICFILES_DIRS = (os.path.join(PROJECT_DIR, 'static'),)
+STATICFILES_DIRS = ('/home/openpds/pdsrsvirtenv/openPDS-RegistryServer/registryServer/static/',)
 
 # List of finder classes that know how to find static files in
 # various locations.
@@ -142,6 +144,7 @@ AUTH_PROFILE_MODULE = 'account.Profile'
 
 INSTALLED_APPS = (
     'django.contrib.auth',
+    'django.contrib.sites',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',

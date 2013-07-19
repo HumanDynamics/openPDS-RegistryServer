@@ -16,13 +16,18 @@ framework.
 import os
 import sys
 import site
+import django.conf
+import sys
 
-import sys;sys.path.append(r'/home/jschmitz/git/pydev/pysrc/')
+
+site.addsitedir('/home/openpds/pdsrsvirtenv/local/lib/python2.7/site-packages')
+
+sys.path.append('/home/openpds/pdsrsvirtenv/openPDS-RegistryServer/registryServer')
+sys.path.append('/home/openpds/pdsrsvirtenv/openPDS-RegistryServer')
 
 django.conf.ENVIRONMENT_VARIABLE = "DJANGO_REGISTRY_SETTINGS_MODULE"
 
 os.environ.setdefault("DJANGO_REGISTRY_SETTINGS_MODULE", "registryServer.settings")
-
 
 # This application object is used by any WSGI server configured to use this
 # file. This includes Django's development server, if the WSGI_APPLICATION
