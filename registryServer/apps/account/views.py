@@ -108,10 +108,6 @@ def roleUsers(request, hostUserID):
     roleToProfiles = []
     roles = {}
     try:
-#        (connection, db) = connectToMongoDB(str(hostUser.pk))
-        # get current PersonalPermissions
-#        pp = findOrCreate('personalPermissions', db, emptyPersonalPermissions)
-
         # process Form
         if request.method == 'POST':
             roleToProfileForm = RoleToProfileForm(request.POST)
@@ -182,26 +178,6 @@ def addRoleToPDS(pds_location, sid, key):
         logging.debug(ex.args)
         return None
     return response
-
-
-@login_required
-@staff_member_required
-def removeRole(request, hostPk, guestPk, role):
-    hostUser = get_object_or_404(User, pk=hostPk)
-    try:
-        (connection, db) = connectToMongoDB(hostPk)
-        if db.personalPermissions.count() == 0:
-            return HttpResponseRedirect('/account/role_users/' +hostPk)
-        pp = db.personalPermissions.find_one()
-        roles = pp['uidRoles'][guestPk]
-        roles.remove(role)
-        if len(roles) == 0:
-            del pp['uidRoles'][guestPk]
-        db.personalPermissions.save(pp)
-    finally:
-        connection.disconnect()
-    return HttpResponseRedirect('/account/role_users/' +hostPk)
-    
 
 @login_required
 @staff_member_required
