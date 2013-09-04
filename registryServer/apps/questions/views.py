@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from oauth2app.models import Client, AccessRange
 from django.contrib.admin.views.decorators import staff_member_required
-from datastoreUtils import *
+#from datastoreUtils import *
 from apps.questions.models import Script
 import pymongo
 import json

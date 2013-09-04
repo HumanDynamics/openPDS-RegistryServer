@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from oauth2app.models import Client, AccessRange
 #from .forms import *
 from django.contrib.admin.views.decorators import staff_member_required
-from datastoreUtils import *
+#from datastoreUtils import *
 import pymongo
 import json
 
