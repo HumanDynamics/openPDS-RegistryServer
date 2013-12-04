@@ -1,29 +1,25 @@
-Project Mustard Seed - Registry Server
+openPDS - Registry Server
 ======================================
 
-We need some good docs in here detailing:
-
-* what is the Registry Server
+* What is the Registry Server?
  
     The Registry Server is a trustframework registry (includes users, roles etc..) and is also an OAuth 2.0 registry.
 
-* how do you get started / installing in virtual environment and running locally
-
-    >sudo -i
+* To get started, you'll need python pip and virtualenv installed on your machine (this probably will require root access)
 
     >apt-get install python-pip
     
     >apt-get install python-virtualenv
 
-    >virtualenv registryvirtenv
+    >virtualenv registryEnv
     
-    >cd registryvirtenv
+    >cd registryEnv
     
     >source bin/activate
     
-    >git clone git@github.com:IDCubed/OMS-RegistryServer.git -b master
+    >git clone git@github.com:HumanDynamics/openPDS-RegistryServer.git -b master
 
-    >cd OMS-RegistryServer
+    >cd openPDS-RegistryServer
     
     >pip install -r conf/requirements.txt
 
@@ -33,9 +29,4 @@ We need some good docs in here detailing:
     
     >python manage.py runserver 0.0.0.0:8000 (for access to local VM)
     
-* links to important pages / wiki / etc
-* 
-* admin/
-* accessrange, client, accesstoken, users, profiles
-* *** document the importance of setting up pds_location
-* 
+* The above steps will get you started with a registry server on port 8000 of your machine's loopback interface (for local access only). 
