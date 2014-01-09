@@ -4,7 +4,7 @@ import os
 pdsDefaultLocation = "default.pds.location.here"
 SERVER_UPLOAD_DIR = '/var/www/trustframework/registryvirtenv/'
 
-PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
+PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
@@ -15,7 +15,7 @@ DATABASES = {
         # supported db backends are 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'
         #'ENGINE': 'django.db.backends.mysql', 
         'ENGINE': 'django.db.backends.sqlite3', 
-        'NAME': '/var/www/trustframework/registryvirtenv/openPDS-RegistryServer/registry.db',      
+        'NAME': os.path.join(PROJECT_ROOT, 'registry.db'),      
         #'NAME': 'test.db',      
         'USER': 'default',      
         'PASSWORD': 'default',  
@@ -29,7 +29,7 @@ DATABASES = {
 
 # where can we find db fixtures?
 FIXTURE_DIRS = (
-   os.path.join(PROJECT_DIR, 'apps/account/fixtures'),
+   os.path.join(PROJECT_ROOT, 'apps/account/fixtures'),
 )
 
 # Local time zone for this installation. Choices can be found here:
@@ -76,7 +76,7 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = os.path.join(PROJECT_DIR, 'static_collection')
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static_collection')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -86,7 +86,7 @@ ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 # Additional locations of static files
 # Don't forget to use absolute paths, not relative paths, and use forward slashes
-STATICFILES_DIRS = (os.path.join(PROJECT_DIR, 'static'),)
+STATICFILES_DIRS = (os.path.join(PROJECT_ROOT, 'static'),)
 
 # List of finder classes that know how to find static files in
 # various locations.
@@ -115,7 +115,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 # where to look for templates
 # Don't forget to use absolute paths, not relative paths, and use forward slashes
 TEMPLATE_DIRS = (
-    os.path.join(PROJECT_DIR, 'templates'),
+    os.path.join(PROJECT_ROOT, 'templates'),
 )
 
 MIDDLEWARE_CLASSES = (
