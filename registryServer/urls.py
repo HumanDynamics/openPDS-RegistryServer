@@ -3,7 +3,7 @@ from django.conf import settings
 from apps.account.api import UserResource
 from django.contrib import admin
 from django.views.generic.simple import direct_to_template
-from fourstore.views import sparql_proxy
+#from fourstore.views import sparql_proxy
 
 admin.autodiscover()
 
@@ -28,9 +28,10 @@ urlpatterns = patterns('views',
 #    (r'^get_id_from_sid$', 'get_id_from_sid'),
     (r'^oic/', include(user_resource.urls)),
     (r'^get_system_entity_connection$', 'get_system_entity_connection'),
-    (r"^sparql/$", sparql_proxy, { "sparql_endpoint": "http://linkedpersonaldata.org:8080" }),
+#    (r"^sparql/$", sparql_proxy, { "sparql_endpoint": "http://linkedpersonaldata.org:8080" }),
     (r'^ontology$', direct_to_template, { "template": "ontology.rdf", "mimetype": "application/rdf+xml" }),
-    (r"^members$", "members" )
+    (r"^members$", "members" ),
+    (r'^accounts/', include('allauth.urls')),
 )
 
 #handler404 = 'oauthManagement.regisryServer.apps.api.views.log_404'

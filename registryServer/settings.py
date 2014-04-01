@@ -29,8 +29,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3', 
         'NAME': '/var/www/trustframework/registryEnv/OMS-RegistryServer/test.db',      
         #'NAME': 'test.db',      
-        'USER': 'test',      
-        'PASSWORD': 'test',  
+        'USER': 'default',      
+        'PASSWORD': 'default',  
         'HOST': '',      
         'PORT': '',      
 #	'OPTIONS': {
@@ -73,7 +73,7 @@ USE_TZ = True
 LOGIN_URL = "/Shibboleth.sso/Login"
 
 # after a successful login, django will redirect here
-LOGIN_REDIRECT_URL = "/ouath2/authorize"
+LOGIN_REDIRECT_URL = "/"
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
@@ -124,6 +124,8 @@ TEMPLATE_LOADERS = (
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     'django.contrib.auth.context_processors.auth',
+    "allauth.account.context_processors.account",
+    "allauth.socialaccount.context_processors.socialaccount",
 )
 
 # where to look for templates
@@ -166,6 +168,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.admindocs',
+    'django.contrib.sites',
     'apps.base',
     'apps.client',
     'apps.account',
