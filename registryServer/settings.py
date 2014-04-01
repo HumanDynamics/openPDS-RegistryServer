@@ -70,10 +70,10 @@ USE_L10N = True
 USE_TZ = True
 
 # when auth is required, django will redirect here
-LOGIN_URL = "/account/login"
+LOGIN_URL = "/Shibboleth.sso/Login"
 
 # after a successful login, django will redirect here
-LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "/ouath2/authorize"
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
@@ -111,6 +111,10 @@ STATICFILES_FINDERS = (
 # XXX - we'll need to figure out a sensible way to regenerate this on deployment
 SECRET_KEY = 'shfkjs894fFerER#5h346&25hjkfbc2=23_6817A1lh[dfjg3=_-89j'
 
+AUTHENTICATION_BACKENDS = (
+  'django.contrib.auth.backends.RemoteUserBackend',
+)
+
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
@@ -134,6 +138,7 @@ MIDDLEWARE_CLASSES = (
     #'django.middleware.csrf.CsrfViewMiddleware', #Currently CSRF forgery protection is turned off
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'shibboleth.middleware.ShibbolethRemoteUserMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
@@ -145,6 +150,13 @@ ROOT_URLCONF = 'urls'
 
 # Define user profile associated with a User
 AUTH_PROFILE_MODULE = 'account.Profile'
+
+SHIBBOLETH_ATTRIBUTE_MAP = {
+   "HTTP_REMOTE_USER": (True, "username"),
+#   "Shibboleth-givenName": (False, "first_name"),
+#   "Shibboleth-sn": (False, "last_name"),
+   "HTTP_MAIL": (True, "email"),
+}
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -163,6 +175,7 @@ INSTALLED_APPS = (
     'oauth2app',
     'django_extensions',
     'lib',
+#    'shibboleth',
     )
 
 #    'regisryServer.apps.oauth2',
