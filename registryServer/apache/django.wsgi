@@ -17,11 +17,11 @@ import os
 import sys
 import site
 
-activate_this = os.path.expanduser("/var/www/trustframework/crowdsosRegistry/bin/activate_this.py")
+activate_this = os.path.expanduser("/var/www/trustframework/registryEnv/bin/activate_this.py")
 execfile(activate_this, dict(__file__=activate_this))
 import django.conf
 django.conf.ENVIRONMENT_VARIABLE = "DJANGO_REGISTRY_SETTINGS_MODULE"
-sys.path.append('/var/www/trustframework/crowdsosRegistry/openPDS-RegistryServer/registryServer');
+sys.path.append('/var/www/trustframework/registryEnv/OMS-RegistryServer/registryServer');
 os.environ.setdefault("DJANGO_REGISTRY_SETTINGS_MODULE", "settings")
 
 
