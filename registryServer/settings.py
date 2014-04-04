@@ -1,8 +1,8 @@
 # XXX - bring back default comments to this file...
 import os
 
-pdsDefaultLocation = "default.pds.location.here"
-SERVER_UPLOAD_DIR = '/var/www/trustframework/registryvirtenv/'
+pdsDefaultLocation = "pds.linkedpersonaldata.org"
+SERVER_UPLOAD_DIR = '/var/www/trustframework/'
 
 PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
 
@@ -15,7 +15,7 @@ DATABASES = {
         # supported db backends are 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'
         #'ENGINE': 'django.db.backends.mysql', 
         'ENGINE': 'django.db.backends.sqlite3', 
-        'NAME': '/var/www/trustframework/registryvirtenv/openPDS-RegistryServer/registry.db',      
+        'NAME': '/var/www/trustframework/registryEnv/OMS-RegistryServer/test.db',      
         #'NAME': 'test.db',      
         'USER': 'default',      
         'PASSWORD': 'default',  
@@ -58,7 +58,7 @@ USE_L10N = True
 USE_TZ = True
 
 # when auth is required, django will redirect here
-LOGIN_URL = "/account/login"
+LOGIN_URL = "/Shibboleth.sso/Login"
 
 # after a successful login, django will redirect here
 LOGIN_REDIRECT_URL = "/"
@@ -99,6 +99,10 @@ STATICFILES_FINDERS = (
 # XXX - we'll need to figure out a sensible way to regenerate this on deployment
 SECRET_KEY = 'shfkjs894fFerER#5h346&25hjkfbc2=23_6817A1lh[dfjg3=_-89j'
 
+AUTHENTICATION_BACKENDS = (
+  'django.contrib.auth.backends.RemoteUserBackend',
+)
+
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
@@ -124,6 +128,7 @@ MIDDLEWARE_CLASSES = (
     #'django.middleware.csrf.CsrfViewMiddleware', #Currently CSRF forgery protection is turned off
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'shibboleth.middleware.ShibbolethRemoteUserMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
@@ -133,15 +138,15 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'urls'
 
-AUTHENTICATION_BACKENDS = (
-    # Needed to login by username in Django admin, regardless of `allauth`
-    "django.contrib.auth.backends.ModelBackend",
-    # `allauth` specific authentication methods, such as login by e-mail
-    "allauth.account.auth_backends.AuthenticationBackend",
-)
-
 # Define user profile associated with a User
 AUTH_PROFILE_MODULE = 'account.Profile'
+
+SHIBBOLETH_ATTRIBUTE_MAP = {
+   "HTTP_REMOTE_USER": (True, "username"),
+#   "Shibboleth-givenName": (False, "first_name"),
+#   "Shibboleth-sn": (False, "last_name"),
+   "HTTP_MAIL": (True, "email"),
+}
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -161,14 +166,7 @@ INSTALLED_APPS = (
     'oauth2app',
     'django_extensions',
     'lib',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    # ... include the providers you want to enable:
-    'allauth.socialaccount.providers.facebook',
-    'allauth.socialaccount.providers.google',
-    'allauth.socialaccount.providers.twitter',
-    'allauth.socialaccount.providers.openid'
+#    'shibboleth',
     )
 
 #    'regisryServer.apps.oauth2',

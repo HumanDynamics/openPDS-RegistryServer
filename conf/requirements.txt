@@ -14,3 +14,5 @@ django-allauth
 
 # oauth2app
 https://github.com/hiidef/oauth2app/tarball/master
+# shibboleth integration login with MIT Credentials, assuming the machine has shibboleth installed
+https://github.com/Brown-University-Library/django-shibboleth-remoteuser/tarball/master
