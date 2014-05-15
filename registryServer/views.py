@@ -24,6 +24,9 @@ import settings
 from django.shortcuts import render_to_response
 
 
+def redirect(request):
+    return HttpResponse("")
+
 def isup(request):
     response = {"success":True}
     return HttpResponse(json.dumps(response), mimetype="application/json")

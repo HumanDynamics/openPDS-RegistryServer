@@ -2,6 +2,7 @@ from django.conf.urls.defaults import patterns, include, url
 from django.conf import settings
 from apps.account.api import UserResource
 from django.contrib import admin
+from apps.bugreports.views import writeReport
 from django.views.generic.simple import direct_to_template
 #from fourstore.views import sparql_proxy
 
@@ -32,6 +33,8 @@ urlpatterns = patterns('views',
     (r'^ontology$', direct_to_template, { "template": "ontology.rdf", "mimetype": "application/rdf+xml" }),
     (r"^members$", "members" ),
     (r'^accounts/', include('allauth.urls')),
+    (r'^redirect_uri', "redirect"),
+    (r'^bug_report', writeReport),
 )
 
 #handler404 = 'oauthManagement.regisryServer.apps.api.views.log_404'

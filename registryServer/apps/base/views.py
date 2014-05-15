@@ -8,6 +8,7 @@ from oauth2app.models import Client, AccessToken
 from django.contrib.auth.decorators import login_required
 from django import forms
 from apps.account.models import Profile
+import settings
 
 class LocationForm(forms.Form):
     location = forms.CharField()
@@ -15,7 +16,7 @@ class LocationForm(forms.Form):
 #@login_required
 def homepage(request):
 
-    template = {}
+    template = { "LOGIN_URL": settings.LOGIN_URL }
 
     if request.user.is_authenticated():
         user_profile = None

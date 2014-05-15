@@ -27,9 +27,7 @@
 		{% if request.user.is_staff %}
 			<p>You are an administrator. Go to the <a href="/account/profiles">Profile Page</a> to create and edit users.</p>
 		{% endif %}
-    
-    		<a class="btn btn-primary btn-large" href="http://{{ profile.pds_location }}/api/personal_data/funf/?format=json&datastore_owner__uuid={{ profile.uuid }}&bearer_token={{ access_token }}">View your personal data.</a>
-       
+      
 	{% else %}
 		<div id="info">
 			<h2>What is it?</h2>
