@@ -1,27 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
 import settings
 from oauth2app.models import Client
 import uuid
 
-#def create_profile_for_user(user):
-#   '''utility function for creating a user, client and profile necessary for instantiating a PDS with a Trust Network'''
-#  pds_ip = settings.pdsDefaultIP
-#  pds_port = settings.pdsDefaultPort
-#  new_client = Client(name=user.username+"_pds", user=user, description="user "+user.username+"'s Personal Data Store", redirect_uri="http://"+pds_ip+":"+pds_port+"/?username="+user.username)
-#  new_client.save()
-#  new_profile = Profile(user=user, pds_ip=pds_ip, pds_port=pds_port, pds_client=new_client)
-#  new_profile.save()
-#  return new_profile
-
 class Profile(models.Model):
   user = models.ForeignKey(User, unique=True)
-#  group = models.ForeignKey('Group', blank=True, null=True)
   pds_location = models.URLField(max_length=100, default=str(settings.pdsDefaultLocation))
-#  pds_ip = models.GenericIPAddressField(default=str(settings.pdsDefaultIP))
-#  pds_port = models.PositiveIntegerField(default=str(settings.pdsDefaultPort))
   funf_password = models.CharField(max_length=100, default="changeme")
-#  pds_client = models.ForeignKey(Client, unique=True)
   uuid = models.CharField(max_length=36, unique=True, default=uuid.uuid4)
   def __unicode__(self):
     return self.user.username
@@ -29,6 +16,12 @@ class Profile(models.Model):
     new_client = Client(name=self.user.username+"_pds", user=self.user, description="user "+self.user.username+"'s Personal Data Store", redirect_uri="http://"+self.pds_location + "/?username="+self.user.username)
     new_client.save()
 #    self.pds_client = new_client
+
+def create_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+post_save.connect(create_profile, sender=User)
      
 PERMISSION = (
   ('r','Read'),

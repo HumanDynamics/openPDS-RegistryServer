@@ -68,7 +68,7 @@ def signup(request):
                     form.cleaned_data["username"],
                     form.cleaned_data["username"],
                     form.cleaned_data["password1"],)
-            profile = Profile.objects.create(user=user)
+            #profile = Profile.objects.create(user=user)
             user = auth.authenticate(
                     username=form.cleaned_data["username"],
                     password=form.cleaned_data["password1"])
