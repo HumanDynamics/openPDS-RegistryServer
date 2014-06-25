@@ -100,7 +100,9 @@ STATICFILES_FINDERS = (
 SECRET_KEY = 'shfkjs894fFerER#5h346&25hjkfbc2=23_6817A1lh[dfjg3=_-89j'
 
 AUTHENTICATION_BACKENDS = (
-  'django.contrib.auth.backends.RemoteUserBackend',
+    'django.contrib.auth.backends.ModelBackend',
+#    'django.contrib.auth.backends.RemoteUserBackend',
+ 'shibboleth.backends.ShibbolethRemoteUserBackend',
 )
 
 # List of callables that know how to import templates from various sources.
@@ -169,44 +171,6 @@ INSTALLED_APPS = (
 #    'shibboleth',
     )
 
-#    'regisryServer.apps.oauth2',
-# XXX - look up to confirm this is correct
-# TTL for an OAUTH2 access token, in seconds (presumably)
-OAUTH2_ACCESS_TOKEN_EXPIRATION = 36000000
-
-# A sample logging configuration. The only tangible logging
-# performed by this configuration is to send an email to
-# the site admins on every HTTP 500 error when DEBUG=False.
-# See http://docs.djangoproject.com/en/dev/topics/logging for
-# more details on how to customize your logging configuration.
-'''
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
-        }
-    },
-    'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
-        }
-    },
-    'loggers': {
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
-    }
-}
-'''
-
-# XXX - figure out where this is going and why we want to use this over the
-# framework django provides
 import logging
 import sys
 logger = logging.getLogger('')
@@ -216,3 +180,10 @@ handler.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(levelname)-8s %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
+
+
+#    'regisryServer.apps.oauth2',
+# XXX - look up to confirm this is correct
+# TTL for an OAUTH2 access token, in seconds (presumably)
+OAUTH2_ACCESS_TOKEN_EXPIRATION = 36000000
+
