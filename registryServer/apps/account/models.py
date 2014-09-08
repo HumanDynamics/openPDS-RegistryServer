@@ -11,7 +11,7 @@ class Profile(models.Model):
   funf_password = models.CharField(max_length=100, default="changeme")
   uuid = models.CharField(max_length=36, unique=True, default=uuid.uuid4)
   def __unicode__(self):
-    return self.user.username
+    return "%s - %s"%(self.user.username, self.uuid)
   def set_default_client(self):
     new_client = Client(name=self.user.username+"_pds", user=self.user, description="user "+self.user.username+"'s Personal Data Store", redirect_uri="http://"+self.pds_location + "/?username="+self.user.username)
     new_client.save()
