@@ -1,8 +1,8 @@
 #-*- coding: utf-8 -*-
 
-import httplib
-import json
-from django.shortcuts import render_to_response, HttpResponse, redirect
+import requests
+
+from django.shortcuts import render_to_response, HttpResponse
 from django.template import RequestContext
 from oauth2app.models import Client, AccessToken
 from django.contrib.auth.decorators import login_required
@@ -26,60 +26,58 @@ def homepage(request):
             # On first login, a user will not have a profile...what to do?
             new_profile = Profile()
             new_profile.user = request.user
-        
+
             new_client = Client(name=request.user.username+"_pds", user=request.user, description="user "+request.user.username+"'s Personal Data Store", redirect_uri="http://"+new_profile.pds_location+"/?username="+request.user.username)
             new_client.save()
             new_profile.pds_client = new_client
             new_profile.save()
-    
+
         if request.GET.get('location'):
             new_profile = request.user.get_profile()
             new_location = request.GET['location']
             new_profile.pds_location = new_location
             new_profile.save()
-    
+
         clients = Client.objects.filter(user=request.user)
         access_tokens = AccessToken.objects.filter(user=request.user).select_related()
     #        access_tokens = access_tokens.select_related()
         form = LocationForm()
-        #print access_tokens[0].token 
+        #print access_tokens[0].token
         template["access_token"] = access_tokens[0].token if len(access_tokens) > 0 else None
         template["clients"] = clients
         template["profile"] = user_profile
         template['form']=form
         template['isup']=is_pds_up(user_profile)
-    
+
     return render_to_response(
-        'base/homepage.html', 
-        template, 
+        'base/homepage.html',
+        template,
         RequestContext(request))
 
 
-def is_pds_up(profile):
-    '''Verifies that a user's PDS is set up and responding'''
-#    pds_location = profile.pds_location
-    try:
-        path = str(profile.pds_location)#str(profile.pds_ip)+":"+str(profile.pds_port)
-        print path
-        conn = httplib.HTTPConnection(path, timeout=2.5)
-        request_path="/discovery/ping"
-        conn.request("GET",str(request_path))
-        r1 = conn.getresponse()
-        response_text = r1.read()
-        print response_text
-        result = json.loads(response_text)
-
-        if result['success'] != True:
-             raise Exception(result['message'])
-        conn.close()
-        return True
-    except Exception as ex:
-        print ex
+def _read_json_success(response):
+    """Attempts to read the `success` value from a JSON response, if
+    applicable. Returns True or False"""
+    if response.status_code != 200:
         return False
 
+    try:
+        # requests > 1.0.0
+        return response.json().get('success', False)
+    except AttributeError:
+        # requests < 1.0.0 had a json attribute instead of a method.
+        return response.json.get('success', False)
 
 
-    
+def is_pds_up(profile, request_path="/discovery/ping", schema="http"):
+    '''Verifies that a user's PDS is set up and responding'''
+    path = "{schema}://{host}{path}".format(
+        schema=schema,
+        host=profile.pds_location,
+        path=request_path
+    )
+    return _read_json_success(requests.get(path))
+
 
 #TODO DELETE this section. testing mongoEngine
 # handle static pages (such as the About pg, Terms pg, and Privacy policy pg)
