@@ -1,18 +1,19 @@
 # XXX add specific version numbers once we can confirm the latest stable versions all work
 django==1.4.3
-pymongo
+pymongo==2.9.5
 # XXX - re-enable once we make postgresql / mysql an developer-defined detail
 #psycopg2
 pycrypto
-django-extensions
+django-extensions==1.6.7
 django-uni-form
 django-tastypie==0.9.11
 mongoengine
 requests
 django-4store
-django-allauth
+django-allauth==0.10.0
 
 # oauth2app
 https://github.com/hiidef/oauth2app/tarball/master
 # shibboleth integration login with MIT Credentials, assuming the machine has shibboleth installed
-https://github.com/Brown-University-Library/django-shibboleth-remoteuser/tarball/master
+# https://github.com/Brown-University-Library/django-shibboleth-remoteuser/tarball/master
+https://github.com/Brown-University-Library/django-shibboleth-remoteuser/archive/v0.5.tar.gz

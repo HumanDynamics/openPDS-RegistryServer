@@ -21,9 +21,9 @@ class UserForm(forms.ModelForm):
         ]
 
 class CreateClientForm(forms.Form):
-    
-    name = forms.CharField(label="Name", max_length=30)
-    
+
+    name = forms.CharField(label="Name", max_length=60)
+
     @property
     def helper(self):
         form = CreateClientForm()
@@ -43,9 +43,9 @@ class ClientRemoveForm(forms.Form):
 
 
 class SignupForm(UserCreationForm):
-    
+
     username = forms.EmailField(label="Email")
-    
+
     @property
     def helper(self):
         form = SignupForm()
@@ -60,10 +60,10 @@ class SignupForm(UserCreationForm):
 
 
 class LoginForm(forms.Form):
-    
-    username = forms.CharField(label="Username", max_length=30)
+
+    username = forms.CharField(label="Username", max_length=60)
     password = forms.CharField(label="Password", widget=forms.PasswordInput)
-    
+
     @property
     def helper(self):
         form = LoginForm()
@@ -87,13 +87,13 @@ class LoginForm(forms.Form):
             elif not self.user_cache.is_active:
                 raise forms.ValidationError("This account is inactive.")
         return self.cleaned_data
-    
+
 
 class GroupForm(forms.ModelForm):
     class Meta:
         model = Group
         exclude = ('profile',)
-        
+
     @property
     def helper(self):
         form = GroupForm()
@@ -114,7 +114,7 @@ ROLE_CHOICES = (
 class RoleToProfileForm(forms.Form):
     role = forms.ChoiceField(label='Role', choices=ROLE_CHOICES)
     uid = forms.CharField(label='User ID')
-    
+
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
