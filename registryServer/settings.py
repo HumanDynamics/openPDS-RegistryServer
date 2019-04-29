@@ -1,7 +1,7 @@
 # XXX - bring back default comments to this file...
 import os
 
-pdsDefaultLocation = "pds.linkedpersonaldata.org"
+pdsDefaultLocation = "localhost:80"
 SERVER_UPLOAD_DIR = '/var/www/trustframework/'
 
 PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -13,14 +13,14 @@ TEMPLATE_DEBUG = DEBUG
 DATABASES = {
     'default': {
         # supported db backends are 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'
-        #'ENGINE': 'django.db.backends.mysql', 
-        'ENGINE': 'django.db.backends.sqlite3', 
-        'NAME': '/var/www/trustframework/registryEnv/OMS-RegistryServer/test.db',      
-        #'NAME': 'test.db',      
-        'USER': 'default',      
-        'PASSWORD': 'default',  
-        'HOST': '',      
-        'PORT': '',      
+        #'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.sqlite3',
+        #'NAME': '/var/www/trustframework/registryEnv/OMS-RegistryServer/test.db',
+        'NAME': 'test.db',
+        'USER': 'default',
+        'PASSWORD': 'default',
+        'HOST': '',
+        'PORT': '',
 #	'OPTIONS': {
 #		'read_default_file': '/etc/mysql/my.cnf',
 #		},
@@ -82,7 +82,7 @@ STATIC_ROOT = os.path.join(PROJECT_DIR, 'static_collection')
 # Example: "http://media.lawrence.com/static/"
 STATIC_URL = '/static/'
 
-ADMIN_MEDIA_PREFIX = '/static/admin/' 
+ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 # Additional locations of static files
 # Don't forget to use absolute paths, not relative paths, and use forward slashes
@@ -186,4 +186,3 @@ logger.addHandler(handler)
 # XXX - look up to confirm this is correct
 # TTL for an OAUTH2 access token, in seconds (presumably)
 OAUTH2_ACCESS_TOKEN_EXPIRATION = 36000000
-

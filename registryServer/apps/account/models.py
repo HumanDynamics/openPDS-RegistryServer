@@ -22,7 +22,7 @@ def create_profile(sender, instance, created, **kwargs):
         Profile.objects.create(user=instance)
 
 post_save.connect(create_profile, sender=User)
-     
+
 PERMISSION = (
   ('r','Read'),
   ('w', 'Write'),
@@ -33,7 +33,7 @@ class Group(models.Model):
   name = models.CharField(max_length=100, unique=True)
   def __unicode__(self):
     return self.name
-    
+
 class UserToUser(models.Model):
   profileGuest = models.ForeignKey(Profile, related_name='guest')
   profileHost = models.ForeignKey(Profile, related_name='host')
