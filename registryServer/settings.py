@@ -1,7 +1,7 @@
 # XXX - bring back default comments to this file...
 import os
 
-pdsDefaultLocation = "localhost:5000"
+pdsDefaultLocation = "localhost:80"
 SERVER_UPLOAD_DIR = '/var/www/trustframework/'
 
 PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
